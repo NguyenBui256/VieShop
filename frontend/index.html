@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VieShop - Trang chủ</title>
+    <link rel="icon" type="image/x-icon" href="assets/logo.png">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="assets/fontawesome-free-6.7.2-web/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">VieShop</a>
+                <div class="nav-menu">
+                    <a href="index.html" class="nav-button">
+                        <i data-lucide="package"></i>
+                        <span>Sản phẩm</span>
+                    </a>
+                    <a href="cart.html" class="cart-button">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-badge">0</span>
+                    </a>
+                    <a href="profile.html" class="nav-button">
+                        <i class="fa-solid fa-user"></i>
+                    </a>
+                    <a href="chat.html" class="nav-button active">
+                        <i class="fa-solid fa-message"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="filters-section">
+        <input 
+            type="text" 
+            id="searchInput" 
+            class="search-bar" 
+            placeholder="Tìm kiếm sản phẩm..." 
+            oninput="filterProducts()"
+        />
+        <select id="priceFilter" class="filter-select" onchange="filterProducts()">
+            <option value="">Lọc theo giá</option>
+            <option value="low">Dưới 200,000 VND</option>
+            <option value="medium">200,000 - 500,000 VND</option>
+            <option value="high">Trên 500,000 VND</option>
+        </select>
+        <select id="categoryFilter" class="filter-select" onchange="filterProducts()">
+            <option value="">Lọc theo loại</option>
+            <option value="clothing">Quần áo</option>
+            <option value="shoes">Giày dép</option>
+            <option value="accessories">Phụ kiện</option>
+        </select>
+    </div>
+
+    <main class="container">
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be dynamically inserted here -->
+        </div>
+    </main>
+
+    <div class="chatbot-widget">
+        <button class="chatbot-toggle">
+            <i class="fa-solid fa-message"></i>
+        </button>
+        <div class="chatbot-window">
+            <div class="chatbot-header">
+                <h3>Chat với VieShop</h3>
+                <button class="chatbot-close">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="chatbot-messages">
+                <div class="message received">
+                    <p>Xin chào! Tôi có thể giúp gì cho bạn?</p>
+                    <span class="time">10:30</span>
+                </div>
+            </div>
+            <div class="chatbot-input">
+                <input type="text" placeholder="Nhập tin nhắn...">
+                <button class="send-button">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/product.js"></script>
+    <script src="js/chat.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

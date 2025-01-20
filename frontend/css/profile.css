@@ -1,0 +1,83 @@
+.profile-container {
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-title {
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+    margin-bottom: 1.5rem;
+}
+
+.profile-form {
+    max-width: 600px;
+    margin-bottom: 2rem;
+}
+
+.order-history {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #eee;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.order-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.order-item {
+    padding: 1rem;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.order-number {
+    font-weight: bold;
+}
+
+.order-date {
+    color: var(--secondary-color);
+}
+
+.order-total {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.order-status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-completed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.logout-btn {
+    margin-top: 2rem;
+    background-color: var(--error-color);
+    color: var
+}

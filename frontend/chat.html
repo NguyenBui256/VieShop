@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyShop - Chat</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="assets/fontawesome-free-6.7.2-web/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">VieShop</a>
+                <div class="nav-menu">
+                    <a href="index.html" class="nav-button">
+                        <i data-lucide="package"></i>
+                        <span>Sản phẩm</span>
+                    </a>
+                    <a href="cart.html" class="cart-button">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-badge">0</span>
+                    </a>
+                    <a href="profile.html" class="nav-button">
+                        <i class="fa-solid fa-user"></i>
+                    </a>
+                    <a href="chat.html" class="nav-button active">
+                        <i class="fa-solid fa-message"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="chat-container">
+        <div class="chat-sidebar">
+            <div class="chat-search">
+                <input type="text" placeholder="Tìm kiếm tin nhắn...">
+            </div>
+            <div class="chat-users">
+                <div class="chat-user active">
+                    <img src="https://via.placeholder.com/40" alt="User avatar">
+                    <div class="chat-user-info">
+                        <h4>Nguyễn Văn A</h4>
+                        <p>Xin chào bạn!</p>
+                    </div>
+                </div>
+                <div class="chat-user">
+                    <img src="https://via.placeholder.com/40" alt="User avatar">
+                    <div class="chat-user-info">
+                        <h4>Trần Thị B</h4>
+                        <p>Sản phẩm còn hàng không?</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="chat-main">
+            <div class="chat-header">
+                <img src="https://via.placeholder.com/40" alt="User avatar">
+                <h3>Nguyễn Văn A</h3>
+            </div>
+            <div class="chat-messages">
+                <div class="message received">
+                    <p>Xin chào bạn!</p>
+                    <span class="time">10:30</span>
+                </div>
+                <div class="message sent">
+                    <p>Chào bạn, mình có thể giúp gì được không?</p>
+                    <span class="time">10:31</span>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" placeholder="Nhập tin nhắn...">
+                <button class="send-button">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/chat.js"></script>
+</body>
+</html>
