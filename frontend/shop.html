@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VieShop - Cửa hàng của tôi</title>
+    <link rel="icon" type="image/x-icon" href="assets/logo.png">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/shop.css">
+    <link rel="stylesheet" href="css/variants.css">
+    <link rel="stylesheet" href="assets/fontawesome-free-6.7.2-web/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">VieShop</a>
+                <div class="nav-menu">
+                    <a href="index.html" class="nav-button">
+                        <i data-lucide="package"></i>
+                        <span>Sản phẩm</span>
+                    </a>
+                    <a href="shop-manage.html" class="nav-button active">
+                        <i class="fa-solid fa-store"></i>
+                        <span>Quản lý cửa hàng</span>
+                    </a>
+                    <a href="cart.html" class="cart-button">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-badge">0</span>
+                    </a>
+                    <a href="profile.html" class="nav-button">
+                        <i class="fa-solid fa-user"></i>
+                    </a>
+                    <a href="chat.html" class="nav-button active">
+                        <i class="fa-solid fa-message"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="shop-info">
+            <div class="shop-banner">
+                <img src="" alt="Ảnh bìa cửa hàng" id="shopBanner">
+                <!-- <button class="btn btn-secondary" id="editBannerBtn">Chỉnh sửa ảnh bìa</button> -->
+            </div>
+            <div class="shop-details">
+                <div class="shop-avatar">
+                    <img src="" alt="Avatar cửa hàng" id="shopAvatar">
+                    <!-- <button class="btn" id="editAvatarBtn">Chỉnh sửa ảnh đại diện</button> -->
+                </div>
+                <div class="shop-text">
+                    <h1 id="shopName">Tên cửa hàng</h1>
+                    <p id="shopDescription">Mô tả cửa hàng của bạn.</p>
+                    <p><strong>Địa chỉ:</strong> <span id="shopAddress">Chưa cập nhật</span></p>
+                    <p><strong>Số điện thoại:</strong> <span id="shopPhone">Chưa cập nhật</span></p>
+                    <p><strong>Số sao đánh giá:</strong> <span id="shopRating">0</span> <i class="fa-solid fa-star"></i></p>
+                    <button class="btn btn-primary" id="editInfoBtn">Chỉnh sửa thông tin</button>
+                    <button class="btn btn-primary" id="deleteShopBtn">Xóa cửa hàng</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="product-management">
+            <h2 class="section-title">Quản lý sản phẩm</h2>
+            <button class="btn btn-primary" id="addProductBtn">Thêm sản phẩm</button>
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="search-bar" 
+                placeholder="Tìm kiếm sản phẩm..." 
+                oninput="filterProducts()"
+            />
+            <select id="priceFilter" class="filter-select" onchange="filterProducts()">
+                <option value="">Lọc theo giá</option>
+                <option value="low">Dưới 200,000 VND</option>
+                <option value="medium">200,000 - 500,000 VND</option>
+                <option value="high">Trên 500,000 VND</option>
+            </select>
+            <select id="categoryFilter" class="filter-select" onchange="filterProducts()">
+                <option value="">Lọc theo loại</option>
+                <option value="clothing">Quần áo</option>
+                <option value="shoes">Giày dép</option>
+                <option value="accessories">Phụ kiện</option>
+            </select>
+            <div class="products-grid" id="myShopGrid">
+                <!-- Sản phẩm sẽ được thêm vào đây -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal thêm/sửa sản phẩm -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Thêm sản phẩm</h2>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="productCategory">Phân loại</label>
+                    <select id="productCategory" class="form-input" required>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productName">Tên sản phẩm</label>
+                    <input type="text" id="productName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Giá sản phẩm</label>
+                    <input type="number" id="productPrice" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="productAvaImage">Hình ảnh đại diện (Chọn một)</label>
+                    <input type="file" id="productAvaImage" class="form-input" accept="image/*" required>
+                    <div id="avaImagePreviewContainer" class="image-preview-container"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productImage">Hình ảnh sản phẩm (Có thể chọn nhiều)</label>
+                    <input type="file" id="productImage" class="form-input" multiple accept="image/*" required>
+                    <div id="imagePreviewContainer" class="image-preview-container"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productDescription">Mô tả</label>
+                    <input type="text" id="productDescription" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="productQuantity">Số lượng</label>
+                    <input type="number" id="productQuantity" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="productVariants">Các loại: </label>
+                    <button id="addVariantBtn" class="btn">Thêm Loại</button>
+                    <div class="variants-grid" id="variantsGrid">
+                        <!-- Các loại Sản phẩm sẽ được thêm vào đây -->
+                    </div>
+                </div>                
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <button type="submit" id="editProductCloseModalBtn" class="btn btn-success">Hủy</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal chỉnh sửa thông tin cửa hàng -->
+    <div class="modal" id="editShopModal">
+        <div class="modal-content">
+            <h2>Chỉnh sửa thông tin cửa hàng</h2>
+            <form id="editShopForm">
+                <div class="form-group">
+                    <label for="editShopName">Tên cửa hàng</label>
+                    <input type="text" id="editShopName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="editShopDescription">Mô tả cửa hàng</label>
+                    <textarea id="editShopDescription" class="form-input" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editShopAddress">Địa chỉ</label>
+                    <input type="text" id="editShopAddress" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="editShopPhone">Số điện thoại</label>
+                    <input type="tel" id="editShopPhone" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="editShopRating">Số sao đánh giá</label>
+                    <input type="number" id="editShopRating" class="form-input" min="0" max="5" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="avatarUrl">Tải ảnh đại diện</label>
+                    <input type="file" id="avatarFileInput" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="bannerUrl">Tải ảnh bìa</label>
+                    <input type="file" id="bannerFileInput" class="form-input" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <button type="button" id="editShopCloseModalBtn" class="btn btn-secondary">Hủy</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/shop.js"></script>
+    <script src="js/shop-product.js"></script>
+    <script src="js/category.js"></script>
+    <script src="js/product-variants.js"></script>
+</body>
+</html>

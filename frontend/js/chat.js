@@ -60,3 +60,6 @@ function sendMessage(input) {
     // Scroll to bottom
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
+
+window.onload = () => {
+}

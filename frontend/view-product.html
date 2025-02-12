@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VieShop - Chi tiết sản phẩm</title>
+    <link rel="icon" type="image/x-icon" href="assets/logo.png">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/product-detail.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="assets/fontawesome-free-6.7.2-web/css/all.min.css">
+</head>
+<body>
+    <!-- Header giữ nguyên -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">VieShop</a>
+                <div class="nav-menu">
+                    <a href="index.html" class="nav-button">
+                        <i data-lucide="package"></i>
+                        <span>Sản phẩm</span>
+                    </a>
+                    <a href="shop-manage.html" class="nav-button active">
+                        <i class="fa-solid fa-store"></i>
+                        <span>Quản lý cửa hàng</span>
+                    </a>
+                    <a href="cart.html" class="cart-button">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-badge">0</span>
+                    </a>
+                    <a href="profile.html" class="nav-button">
+                        <i class="fa-solid fa-user"></i>
+                    </a>
+                    <a href="chat.html" class="nav-button active">
+                        <i class="fa-solid fa-message"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Phần chi tiết sản phẩm -->
+        <section class="product-detail-section">
+            <div class="product-gallery">
+                <button class="gallery-nav prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="product-images" id="productImages">
+                    <!-- Ảnh sản phẩm sẽ được render ở đây -->
+                </div>
+                <button class="gallery-nav next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <div class="product-info" id="productInfo">
+                <!-- Thông tin sản phẩm sẽ được render ở đây -->
+                <div class="product-info" id="productInfo">
+                    <!-- Thông tin sản phẩm hiện tại -->
+                    <div class="add-to-cart-section">
+                        <button class="btn-add-to-cart">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            Thêm vào giỏ hàng
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phần thông tin shop -->
+        <section class="shop-section" id="shopInfo">
+            <!-- Thông tin shop sẽ được render ở đây -->
+        </section>
+
+        <!-- Phần đánh giá và bình luận -->
+        <section class="reviews-section">
+            <div class="reviews-header">
+                <div class="reviews-summary">
+                    <h2>Đánh giá sản phẩm</h2>
+                    <div class="rating-overview">
+                        <div class="total-rating">
+                            <span class="rating-number">4.8</span>
+                            <div class="stars"></div>
+                            <span class="total-reviews">238 đánh giá</span>
+                        </div>
+                        <div class="rating-bars" id="ratingBars">
+                            <!-- Rating bars sẽ được render ở đây -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="review-form-section">
+                <h3>Viết đánh giá</h3>
+                <form id="reviewForm" class="review-form">
+                    <div class="rating-input">
+                        <label>Đánh giá của bạn:</label>
+                        <div class="star-rating">
+                            <i class="far fa-star" data-rating="1"></i>
+                            <i class="far fa-star" data-rating="2"></i>
+                            <i class="far fa-star" data-rating="3"></i>
+                            <i class="far fa-star" data-rating="4"></i>
+                            <i class="far fa-star" data-rating="5"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Bình luận:</label>
+                        <textarea placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."></textarea>
+                    </div>
+                    <div class="media-upload-section">
+                        <div class="upload-preview" id="uploadPreview"></div>
+                        <div class="upload-buttons">
+                            <label class="upload-btn">
+                                <i class="fa-solid fa-image"></i>
+                                Thêm ảnh
+                                <input type="file" accept="image/*" multiple class="hidden" id="imageUpload">
+                            </label>
+                            <label class="upload-btn">
+                                <i class="fa-solid fa-video"></i>
+                                Thêm video
+                                <input type="file" accept="video/*" class="hidden" id="videoUpload">
+                            </label>
+                        </div>
+                        <div class="upload-limit">Tối đa 5 ảnh, 1 video</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                </form>
+            </div>
+
+            <div class="reviews-list" id="reviewsList">
+                <!-- Danh sách đánh giá sẽ được render ở đây -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Notification -->
+    <div id="notification" class="notification" style="display: none;">
+        <p></p>
+    </div>
+
+    <script src="js/product-detail.js"></script>
+</body>
+</html>

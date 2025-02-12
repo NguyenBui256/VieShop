@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File to Supabase</title>
+</head>
+<body>
+    <h1>Upload File to Supabase</h1>
+    <input type="file" id="fileInput">
+    <button id="uploadButton">Upload</button>
+    <img src="https://gcdzatdsbirirrtxktlj.supabase.co/storage/v1/object/public/vieshop/uploads/Grafana_logo.png">
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadButton = document.getElementById('uploadButton');
+
+        uploadButton.addEventListener('click', async () => {
+            const file = fileInput.files[0]; // Lấy file đã chọn
+            if (!file) {
+                alert('Please select a file first!');
+                return;
+            }
+
+            // Upload file lên Supabase
+            const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+            
+            // Thay đổi URL và KEY thành của bạn
+            const supabaseUrl = "https://gcdzatdsbirirrtxktlj.supabase.co";
+            const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjZHphdGRzYmlyaXJydHhrdGxqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc4ODg1NjksImV4cCI6MjA1MzQ2NDU2OX0._jkPv02rqaNiY7eELU2hm59U1uOZJJqLDx-VvHX0SdM";
+
+            const supabase = createClient(supabaseUrl, supabaseKey);
+
+            const filePath = `uploads/${file.name}`; // Đường dẫn lưu trữ trong bucket
+
+            supabase.storage.from('vieshop')
+
+            const { data, error } = await supabase.storage
+                .from('vieshop') // Thay bằng tên bucket của bạn
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (error) {
+                // console.error('Upload failed:', error);
+                alert('Failed to upload file!' + error);
+            } else {
+                // console.log('Upload successful:', data);
+                alert('File uploaded successfully!');
+            }
+        });
+    </script>
+</body>
+</html>

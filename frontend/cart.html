@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyShop - Giỏ hàng</title>
+    <title>VieShop - Giỏ hàng</title>
+    <link rel="icon" type="image/x-icon" href="assets/logo.png">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/cart.css">
+    <link rel="stylesheet" href="css/profile.css">
     <link rel="stylesheet" href="assets/fontawesome-free-6.7.2-web/css/all.min.css">
 </head>
 <body>
     <header class="header">
         <div class="container">
             <div class="nav-wrapper">
-                <a href="index.html" class="logo">MyShop</a>
+                <a href="index.html" class="logo">VieShop</a>
                 <div class="nav-menu">
                     <a href="index.html" class="nav-button">
                         <i data-lucide="package"></i>
                         <span>Sản phẩm</span>
+                    </a>
+                    <a href="shop-manage.html" class="nav-button active">
+                        <i class="fa-solid fa-store"></i>
+                        <span>Quản lý cửa hàng</span>
                     </a>
                     <a href="cart.html" class="cart-button">
                         <i class="fa-solid fa-cart-shopping"></i>
@@ -24,6 +30,9 @@
                     </a>
                     <a href="profile.html" class="nav-button">
                         <i class="fa-solid fa-user"></i>
+                    </a>
+                    <a href="chat.html" class="nav-button active">
+                        <i class="fa-solid fa-message"></i>
                     </a>
                 </div>
             </div>
@@ -37,20 +46,26 @@
                 <!-- Cart items will be dynamically inserted here -->
             </div>
             <div class="cart-summary">
+                
                 <div class="summary-row">
-                    <span>Tổng tiền:</span>
+                    <span><h3>Tổng tiền:</h3></span>
                     <span id="totalPrice" class="total-price">0 ₫</span>
                 </div>
-                <button class="btn btn-primary checkout-btn" onclick="checkout()">
-                    Thanh toán
-                </button>
+                <h3>Địa chỉ giao hàng: </h3>
+                <select id="addressSelect" class="address-section">
+                    <option value="" disabled selected>Chọn địa chỉ giao hàng</option>
+                </select>
+                
+                <form">
+                    <button class="btn btn-primary checkout-btn" id="checkoutBtn">
+                        Thanh toán
+                    </button>
+                </form>
             </div>
         </div>
     </main>
 
     <script src="js/cart.js"></script>
-    <script>
-        lucide.createIcons();
-    </script>
+    <script src="js/cart-checkout.js"></script>
 </body>
 </html>

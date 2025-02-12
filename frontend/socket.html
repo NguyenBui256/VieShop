@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Demo</title>
+    <style>
+        .notification {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+        }
+        #notificationContainer {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .connected {
+            color: green;
+        }
+        .disconnected {
+            color: red;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <div>
+        <h2>WebSocket Demo</h2>
+        <p>Status: <span id="status" class="disconnected">Disconnected</span></p>
+        <button onclick="connect()">Connect</button>
+        <button onclick="disconnect()">Disconnect</button>
+    </div>
+
+    <div id="notificationContainer"></div>
+
+    <script>
+        let stompClient = null;
+        const userId = "1"; // Thay thế bằng user ID thực tế
+
+        function connect() {
+            const socket = new SockJS('http://localhost:8080/ws');
+            stompClient = Stomp.over(socket);
+            
+            stompClient.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+                document.getElementById('status').textContent = 'Connected';
+                document.getElementById('status').className = 'connected';
+
+                // Subscribe để nhận thông báo
+                stompClient.subscribe('/user/' + userId + '/notification', function(notification) {
+                    showNotification(JSON.parse(notification.body));
+                });
+            }, function(error) {
+                console.log('Error: ' + error);
+                document.getElementById('status').textContent = 'Error connecting';
+                document.getElementById('status').className = 'disconnected';
+            });
+        }
+
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+                document.getElementById('status').textContent = 'Disconnected';
+                document.getElementById('status').className = 'disconnected';
+            }
+        }
+
+        function showNotification(notification) {
+            const container = document.getElementById('notificationContainer');
+            const notificationDiv = document.createElement('div');
+            notificationDiv.className = 'notification';
+            notificationDiv.textContent = JSON.stringify(notification);
+            container.prepend(notificationDiv);
+        }
+    </script>
+</body>
+</html>

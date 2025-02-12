@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyShop - Hồ sơ</title>
+    <title>VieShop - Hồ sơ</title>
+    <link rel="icon" type="image/x-icon" href="assets/logo.png">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/profile.css">
     <link rel="stylesheet" href="assets/fontawesome-free-6.7.2-web/css/all.min.css">
@@ -12,11 +13,15 @@
     <header class="header">
         <div class="container">
             <div class="nav-wrapper">
-                <a href="index.html" class="logo">MyShop</a>
+                <a href="index.html" class="logo">VieShop</a>
                 <div class="nav-menu">
                     <a href="index.html" class="nav-button">
                         <i data-lucide="package"></i>
                         <span>Sản phẩm</span>
+                    </a>
+                    <a href="shop-manage.html" class="nav-button active">
+                        <i class="fa-solid fa-store"></i>
+                        <span>Quản lý cửa hàng</span>
                     </a>
                     <a href="cart.html" class="cart-button">
                         <i class="fa-solid fa-cart-shopping"></i>
@@ -25,6 +30,9 @@
                     <a href="profile.html" class="nav-button">
                         <i class="fa-solid fa-user"></i>
                     </a>
+                    <a href="chat.html" class="nav-button active">
+                        <i class="fa-solid fa-message"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -32,38 +40,55 @@
 
     <main class="container">
         <div class="profile-container">
-            <h2 class="profile-title">Hồ sơ của tôi</h2>
+            <div class="profile-header">
+                <h2 class="profile-title">Hồ sơ của tôi</h2>
+                <button type="button" id="changePasswordBtn" class="btn btn-primary" onclick="toggleChangePassword(true)">
+                    Đổi mật khẩu
+                </button>
+                <button type="button" id="editButton" class="btn btn-primary" onclick="toggleEditMode()">
+                    Chỉnh sửa thông tin
+                </button>
+                <button type="submit" id="submitButton" class="btn btn-success" style="display: none;">
+                    Xác nhận
+                </button>
+                <!-- Nút đổi mật khẩu -->
+                
+            </div>
             
             <form id="profileForm" class="profile-form">
                 <div class="form-group">
-                    <label class="form-label" for="fullName">Họ và tên</label>
-                    <input type="text" id="fullName" class="form-input" required>
+                    <label class="form-label" for="username">Tên đăng nhập</label>
+                    <input type="text" id="username" class="form-input" disabled>
                 </div>
-
+                <div class="form-group">
+                    <label class="form-label" for="fullName">Họ và tên</label>
+                    <input type="text" id="fullName" class="form-input" disabled>
+                </div>
                 <div class="form-group">
                     <label class="form-label" for="email">Email</label>
-                    <input type="email" id="email" class="form-input" required>
+                    <input type="email" id="email" class="form-input" disabled>
                 </div>
-
                 <div class="form-group">
                     <label class="form-label" for="phone">Số điện thoại</label>
-                    <input type="tel" id="phone" class="form-input">
+                    <input type="tel" id="phone" class="form-input" disabled>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="address">Địa chỉ</label>
-                    <textarea id="address" class="form-input" rows="3"></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
             </form>
+            <div class="form-group">
+                <h3>Địa chỉ: </h3>
+                <div class="address-section">
+                    <div id="addressList" class="address-list">
+                        <!-- Danh sách địa chỉ sẽ được thêm động tại đây -->
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="addNewAddress()">Thêm địa chỉ mới</button>
+                </div>
+            </div>
 
             <div class="order-history">
                 <h3 class="section-title">Lịch sử đơn hàng</h3>
                 <div id="orderList" class="order-list">
-                    <!-- Order history will be dynamically inserted here -->
+                    <!-- Danh sách đơn hàng sẽ được render động -->
                 </div>
-            </div>
+            </div>            
 
             <button onclick="logout()" class="btn btn-secondary logout-btn">
                 Đăng xuất
@@ -71,9 +96,35 @@
         </div>
     </main>
 
+    <!-- Overlay và form đổi mật khẩu -->
+    <div id="changePasswordOverlay" class="overlay">
+        <div class="modal">
+            <form id="changePasswordForm" class="change-password-form">
+                <div class="form-group">
+                    <label class="form-label" for="oldPassword">Mật khẩu cũ</label>
+                    <input type="password" id="oldPassword" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="newPassword">Mật khẩu mới</label>
+                    <input type="password" id="newPassword" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">Xác nhận mật khẩu mới</label>
+                    <input type="password" id="confirmPassword" class="form-input" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Cập nhật mật khẩu</button>
+                <button type="button" class="btn btn-secondary" onclick=toggleChangePassword(false)>
+                    Hủy
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script src="js/profile.js"></script>
-    <script>
-        lucide.createIcons();
-    </script>
+    <script src="js/profile_user.js"></script>
+    <script src="js/profile_address.js"></script>
 </body>
 </html>

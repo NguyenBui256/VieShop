@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VieShop - Quản lý cửa hàng</title>
+    <link rel="icon" type="image/x-icon" href="assets/logo.png">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/shop.css">
+    <link rel="stylesheet" href="css/shop_manage.css">
+    <link rel="stylesheet" href="assets/fontawesome-free-6.7.2-web/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">VieShop</a>
+                <div class="nav-menu">
+                    <a href="index.html" class="nav-button">
+                        <i data-lucide="package"></i>
+                        <span>Sản phẩm</span>
+                    </a>
+                    <a href="shop-manage.html" class="nav-button active">
+                        <i class="fa-solid fa-store"></i>
+                        <span>Quản lý cửa hàng</span>
+                    </a>
+                    <a href="cart.html" class="cart-button">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-badge">0</span>
+                    </a>
+                    <a href="profile.html" class="nav-button">
+                        <i class="fa-solid fa-user"></i>
+                    </a>
+                    <a href="chat.html" class="nav-button active">
+                        <i class="fa-solid fa-message"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Quản lý cửa hàng</h1>
+        <button class="btn btn-primary" id="addShopBtn">Thêm cửa hàng</button>
+        <div class="shop-list" id="shopList">
+            <!-- Danh sách cửa hàng sẽ được thêm ở đây -->
+        </div>
+    </main>
+
+    <!-- Modal thêm/sửa cửa hàng -->
+    <div class="modal" id="shopModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Thêm cửa hàng</h2>
+            <form id="shopForm">
+                <div class="form-group">
+                    <label for="shopName">Tên cửa hàng</label>
+                    <input type="text" id="shopName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="shopAddress">Địa chỉ cửa hàng</label>
+                    <input type="text" id="shopAddress" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="shopPhoneNumberr">Số điện thoại</label>
+                    <input type="text" id="shopPhoneNumber" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="shopDescription">Mô tả</label>
+                    <input type="text" id="shopDescription" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="shopAvatarUrl">Tải ảnh đại diện</label>
+                    <input type="text" id="shopAvatarUrl" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="shopBannerUrl">Tải ảnh bìa</label>
+                    <input type="text" id="shopBannerUrl" class="form-input" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <button type="button" id="closeModalBtn" class="btn btn-secondary">Hủy</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/shop-manage.js"></script>
+</body>
+</html>
