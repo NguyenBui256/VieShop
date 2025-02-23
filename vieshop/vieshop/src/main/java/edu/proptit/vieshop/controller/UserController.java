@@ -1,19 +1,11 @@
 package edu.proptit.vieshop.controller;
 
-import edu.proptit.vieshop.dto.AuthRequest;
 import edu.proptit.vieshop.dto.CustomResponse;
 import edu.proptit.vieshop.dto.UserDTO;
-import edu.proptit.vieshop.model.products.Product;
 import edu.proptit.vieshop.model.users.User;
 import edu.proptit.vieshop.service.UserService;
-import edu.proptit.vieshop.service.impl.JWTServiceImpl;
-import jakarta.validation.Valid;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;

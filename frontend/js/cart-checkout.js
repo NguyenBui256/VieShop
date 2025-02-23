@@ -1,4 +1,7 @@
+import { getCookie } from "./auth.js";
+
 const PAYOS_URL = 'http://localhost:8080/api/v1/order-payos/create';
+const PAYMENT_URL = 'http://localhost:8080/api/v1/payment';
 const ADDRESS_URL = 'http://localhost:8080/api/v1/address/personal-address';
 const ORDER_URL = 'http://localhost:8080/api/v1/orders';
 const ITEM_URL = 'http://localhost:8080/api/v1/items';
@@ -31,7 +34,7 @@ async function checkout() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem('access-token')
+                "Authorization": "Bearer " + getCookie('access-token')
             },
             body: JSON.stringify(payOSrequestBody)
         });
@@ -39,7 +42,27 @@ async function checkout() {
         localStorage.setItem('lastOrderId', order.id);
         localStorage.setItem('lastTransactionId', jsonObject.data.orderCode);
         console.log(jsonObject);
-        window.open(jsonObject.data.checkoutUrl, "_self");
+
+        let transaction = {
+            "orderId": order.id,
+            "userId": user.id, 
+            "transactionId": jsonObject.data.orderCode,
+            "amount": jsonObject.data.amount,
+            "status": jsonObject.data.status,
+            "description": jsonObject.data.description,
+            "checkoutUrl": jsonObject.data.checkoutUrl
+        };
+        
+        await fetch(PAYMENT_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + getCookie('access-token')
+            },
+            body: JSON.stringify(transaction)
+        });
+
+        window.open(transaction.checkoutUrl, "_self");
 
     } catch (error) {
         console.error("Lỗi khi thanh toán: ", error);
@@ -62,7 +85,7 @@ async function createOrder() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                "Authorization": "Bearer " + localStorage.getItem('access-token')
+                "Authorization": "Bearer " + getCookie('access-token')
             },
             body: JSON.stringify(requestBody)
         });
@@ -90,7 +113,7 @@ async function loadAddresses() {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         }
     })
     const data = await response.json();
@@ -128,7 +151,7 @@ async function createOrderItem(item, order) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         },
         body: JSON.stringify(requestBody)
     });

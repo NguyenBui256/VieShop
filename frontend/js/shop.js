@@ -1,9 +1,13 @@
+import { getCookie } from "./auth.js";
+
 const SHOP_INFO_URL = 'http://localhost:8080/api/v1/shops';
 const SHOP_PRODUCT_URL = 'http://localhost:8080/api/v1/products/belong-to-shop';
 
 const urlParams = new URLSearchParams(window.location.search);
 const shopId = urlParams.get('id');
 const user = JSON.parse(localStorage.getItem('user'));
+
+var shop = {};
 
 
 document.getElementById("editInfoBtn").addEventListener("click", async () => {
@@ -40,7 +44,7 @@ document.getElementById("editShopForm").addEventListener("submit", async (e) => 
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         },
         body: JSON.stringify({
             "userId": user.id,
@@ -68,7 +72,7 @@ document.getElementById("deleteShopBtn").addEventListener("click", async () => {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem('access-token')
+                "Authorization": "Bearer " + getCookie('access-token')
             }
         });
         const data = await response.json();
@@ -92,7 +96,7 @@ async function fetch_shop_info() {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         }
     });
     const data = await response.json();
@@ -137,12 +141,16 @@ async function upload_image() {
     return response;
 }
 
+import { fetch_products } from "./shop-product.js";
+import { renderProducts } from "./shop-product.js";
+import { fetch_shop_category } from "./category.js";
+import { render_shop_category } from "./category.js";
 
 window.onload = async () => {
     await fetch_shop_info();
     renderShopInfo();
-    await fetch_products();
+    await fetch_products(shopId);
     renderProducts();
-    await fetch_shop_category();
+    await fetch_shop_category(shopId);
     render_shop_category();
 }   

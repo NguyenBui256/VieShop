@@ -1,6 +1,8 @@
-const PRODUCT_URL = 'http://localhost:8080/api/v1/products';
+import { getCookie } from "./auth.js";
 
-var shop;
+const PRODUCT_URL = 'http://localhost:8080/api/v1/products';
+const SHOP_PRODUCT_URL = 'http://localhost:8080/api/v1/products/belong-to-shop';
+
 var products = []; // Mảng lưu danh sách sản phẩm
 var editingProductIndex = null;
 
@@ -53,7 +55,7 @@ productForm.addEventListener("submit", async (e) => {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem('access-token')
+                "Authorization": "Bearer " + getCookie('access-token')
             },
             body: JSON.stringify(newProduct)
         })
@@ -68,12 +70,12 @@ productForm.addEventListener("submit", async (e) => {
     renderProducts();
 });
 
-async function fetch_products() {
+export async function fetch_products(shopId) {
     const response = await fetch(SHOP_PRODUCT_URL+"/"+shopId, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         }
     });
     const data = await response.json();
@@ -84,10 +86,9 @@ async function fetch_products() {
         products = data.data;
 
     }
-
 }
 
-function renderProducts() {
+export function renderProducts() {
     let html = ``;
     let index = 0;
     for(const product of products) {
@@ -137,7 +138,7 @@ async function addProduct() {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         },
         body: JSON.stringify({
             "shopId": shopId,
@@ -175,7 +176,7 @@ async function deleteProduct(index) {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem('access-token')
+                "Authorization": "Bearer " + getCookie('access-token')
             }
         });
         const data = await response.json();

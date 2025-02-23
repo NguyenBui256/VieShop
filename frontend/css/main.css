@@ -72,7 +72,7 @@ body {
     background: none;
     border: none;
     cursor: pointer;
-    margin-right: 1rem;
+    margin-right: 1.5rem;
 }
 
 .cart-badge {
@@ -86,7 +86,7 @@ body {
     font-weight: bold;
     padding: 0.25rem 0.5rem;
     border-radius: 9999px;
-    min-width: 20px;
+    min-width: 10px;
     text-align: center;
 }
 

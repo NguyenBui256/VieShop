@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.proptit.vieshop.dto.CustomResponse;
+import edu.proptit.vieshop.dto.PaymentDTO;
 import edu.proptit.vieshop.model.orders.PaymentTransaction;
 import edu.proptit.vieshop.service.PaymentService;
 import lombok.AllArgsConstructor;
@@ -36,7 +37,7 @@ public class PaymentController {
   }
 
   @PostMapping("")
-  public CustomResponse<?> createPayment(@RequestBody PaymentTransaction paymentTransaction) {
+  public CustomResponse<?> createPayment(@RequestBody PaymentDTO paymentTransaction) {
     return new CustomResponse<>().message(paymentService.createPayment(paymentTransaction));
   }
 }

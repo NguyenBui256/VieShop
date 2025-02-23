@@ -1,6 +1,5 @@
 package edu.proptit.vieshop.model.chats;
 
-import edu.proptit.vieshop.model.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,24 +9,22 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "ChatMessages")
-public class ChatMessage {
+@Table(name = "chat_messages")
+public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "chat_room_id", nullable = false)
-    private ChatRoom chatRoom;
+    @Column(name = "chat_room_id", nullable = false)
+    private Long chatRoomId;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id", nullable = false)
-    private User sender;
+    @Column(name = "sender_id", nullable = false)
+    private Long senderId;
 
     @Column(name = "message_type", nullable = false)
     private String messageType;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
     @Column(name = "is_read", nullable = false)

@@ -4,7 +4,7 @@ import edu.proptit.vieshop.dto.CustomResponse;
 import edu.proptit.vieshop.model.orders.Order;
 import edu.proptit.vieshop.service.OrderService;
 import edu.proptit.vieshop.websocket.Notification;
-import edu.proptit.vieshop.websocket.NotificationService;
+import edu.proptit.vieshop.websocket.WebsocketService;
 import edu.proptit.vieshop.common.NotificationStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/orders")
 public class OrderController {
     private final OrderService orderService;
-    private final NotificationService notificationService;
+    private final WebsocketService notificationService;
 
     @PostMapping("/{userId}")
     public void testNoti(@PathVariable Long userId) {

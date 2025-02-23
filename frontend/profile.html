@@ -42,10 +42,10 @@
         <div class="profile-container">
             <div class="profile-header">
                 <h2 class="profile-title">Hồ sơ của tôi</h2>
-                <button type="button" id="changePasswordBtn" class="btn btn-primary" onclick="toggleChangePassword(true)">
+                <button type="button" id="changePasswordBtn" class="btn btn-primary">
                     Đổi mật khẩu
                 </button>
-                <button type="button" id="editButton" class="btn btn-primary" onclick="toggleEditMode()">
+                <button type="button" id="editButton" class="btn btn-primary">
                     Chỉnh sửa thông tin
                 </button>
                 <button type="submit" id="submitButton" class="btn btn-success" style="display: none;">
@@ -79,7 +79,7 @@
                     <div id="addressList" class="address-list">
                         <!-- Danh sách địa chỉ sẽ được thêm động tại đây -->
                     </div>
-                    <button type="button" class="btn btn-primary" onclick="addNewAddress()">Thêm địa chỉ mới</button>
+                    <button id="addAddressBtn" type="button" class="btn btn-primary">Thêm địa chỉ mới</button>
                 </div>
             </div>
 
@@ -90,7 +90,7 @@
                 </div>
             </div>            
 
-            <button onclick="logout()" class="btn btn-secondary logout-btn">
+            <button id="logoutBtn" class="btn btn-secondary logout-btn">
                 Đăng xuất
             </button>
         </div>
@@ -116,15 +116,15 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary">Cập nhật mật khẩu</button>
-                <button type="button" class="btn btn-secondary" onclick=toggleChangePassword(false)>
+                <button id="togglePasswordBtn" type="button" class="btn btn-secondary">
                     Hủy
                 </button>
             </form>
         </div>
     </div>
 
-    <script src="js/profile.js"></script>
-    <script src="js/profile_user.js"></script>
-    <script src="js/profile_address.js"></script>
+    <script type="module" src="js/profile.js"></script>
+    <script type="module" src="js/profile_user.js"></script>
+    <script type="module" src="js/profile_address.js"></script>
 </body>
 </html>

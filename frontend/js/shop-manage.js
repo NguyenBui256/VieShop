@@ -1,3 +1,5 @@
+import { getCookie } from "./auth.js";
+
 const SHOP_GET_URL = 'http://localhost:8080/api/v1/shops/owning-shop'
 const SHOP_URL = 'http://localhost:8080/api/v1/shops'
 
@@ -12,12 +14,12 @@ let isEditing = false;
 let editingIndex = null;
 var user = JSON.parse(localStorage.getItem('user'));
 
-async function fetch_shop() {
+export async function fetch_shop() {
     const response = await fetch(SHOP_GET_URL, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         }
     });
     const data = await response.json();
@@ -70,7 +72,7 @@ async function callAddShopApi() {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         },
         body: JSON.stringify({
             "userId": user.id,
@@ -92,7 +94,7 @@ async function callAddShopApi() {
 }
 
 // Render danh sách cửa hàng
-function renderShops() {
+export function renderShops() {
     shopList.innerHTML = "";
 
     shops.forEach((shop, index) => {

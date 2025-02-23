@@ -8,9 +8,24 @@ spring:
     password: Theshanon25062004@
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-  # Uncomment dòng này nếu bạn muốn sử dụng MySQLDialect
-  # jpa:
-  #   database-platform: org.hibernate.dialect.MySQLDialect
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: -1
+      retries: 1
+      properties:
+        [ spring.json.type.mapping ]: message:edu.proptit.vieshop.model.chats.ChatMessageDTO
+        [ enable.idempotence ]: true
+        [ max.in.flight.requests.per.connection ]: 5
+    consumer:
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: "edu.proptit.vieshop.dto"
+
+
+
 
 jwt:
   signerKey: "bb249fa35f9459ffa73393868b4fce1636e059eb95b56ffbc3867817d528452165a628478607bd33ff58dc53e38707a111b40a21f7b8655a9a770125f2519816"

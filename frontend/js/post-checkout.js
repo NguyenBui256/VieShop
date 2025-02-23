@@ -1,41 +1,21 @@
-const CHECKOUT_URL = "http://localhost:8080/api/v1/order-payos";
+import { getCookie } from "./auth.js";
+
+const PAYMENT_URL = "http://localhost:8080/api/v1/order-payos/cancel";
 const SAVE_PAYMENT_URL = "http://localhost:8080/api/v1/payment"
 const orderId = localStorage.getItem('lastOrderId');
 const transactionId = localStorage.getItem('lastTransactionId');
 const userId = JSON.parse(localStorage.getItem('user')).id;
 
 async function checkout_result() {
-    const response = await fetch(CHECKOUT_URL + "/" + transactionId, {
-        method: "GET",
+    const response = await fetch(PAYMENT_URL + "/" + transactionId, {
+        method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         }
     });
     const data = await response.json();
     console.log(data);
-    let payment = data.data;
-
-    let requestBody = {
-        "orderId": orderId,
-        "userId": userId,
-        "transactionId": payment.orderCode,
-        "amount": payment.amount,
-        "status": payment.status,
-        "description": payment.transactions[0].description,
-        "isDelete": false
-    }
-    console.log(requestBody);
-    const response2 = await fetch(SAVE_PAYMENT_URL, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
-        },
-        body: JSON.stringify(requestBody)
-    });
-    const data2 = await response2.json();
-    console.log(data2.message);
     return;
 }
 

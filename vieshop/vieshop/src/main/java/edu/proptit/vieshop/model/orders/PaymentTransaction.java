@@ -21,7 +21,7 @@ public class PaymentTransaction {
     @Column(name = "order_id", nullable = false)
     private Long orderId;
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
     @Column(name = "transaction_id", nullable = false)
@@ -44,5 +44,8 @@ public class PaymentTransaction {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "checkout_url")
+    private String checkoutUrl;
 }
 

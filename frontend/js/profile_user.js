@@ -1,3 +1,5 @@
+import { getCookie } from "./auth.js";
+
 const USERINFO_URL = 'http://localhost:8080/api/v1/users/personal-info';
 const FIXINFO_URL = 'http://localhost:8080/api/v1/users/fix-personal-info';
 const FIXPASS_URL = 'http://localhost:8080/api/v1/users/update-password';
@@ -8,7 +10,7 @@ async function fetchUser(){
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         }
     });
     const data = await response.json();
@@ -29,7 +31,7 @@ async function updateUser() {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         },
         body: JSON.stringify({
             "username": "",
@@ -59,7 +61,7 @@ async function updatePassword() {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         },
         body: JSON.stringify({
             "oldPassword": oldPassword,
@@ -77,18 +79,24 @@ async function logout() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                "Authorization": "Bearer " + localStorage.getItem('access-token')
+                "Authorization": "Bearer " + getCookie('access-token')
             }
         });
         const data = await response.json();
         if (data.error) {
             alert(data.message);
         } else {
+            document.cookie = "";
             localStorage.clear();
             window.location.href = 'login.html';
         }
     }
 }
+
+document.getElementById('logoutBtn').addEventListener('click', logout);
+
+// document.getElementById('updateInfo').addEventListener('click', updateUser);
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     await fetchUser();

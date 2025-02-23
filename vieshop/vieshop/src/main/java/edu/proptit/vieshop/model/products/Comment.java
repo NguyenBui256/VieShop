@@ -16,20 +16,17 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @Column(name = "column_id", nullable = false)
+    private Long productId;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private Comment parentComment;
+    @Column(name = "parent_id")
+    private Long parentCommentId;
 
     @Column(name = "is_delete", nullable = false)
     private Boolean isDelete;

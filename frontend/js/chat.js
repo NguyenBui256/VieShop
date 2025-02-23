@@ -3,6 +3,16 @@ const chatbotToggle = document.querySelector('.chatbot-toggle');
 const chatbotWindow = document.querySelector('.chatbot-window');
 const chatbotClose = document.querySelector('.chatbot-close');
 
+const user = JSON.parse(localStorage.getItem('user'));
+
+const urlParams = new URLSearchParams(window.location.search);
+const receiverId = urlParams.get('id');
+const receiverName = urlParams.get('name');
+const receiverType = urlParams.get('type');
+
+var socket = null;
+var stompClient = null;
+
 if (chatbotToggle && chatbotWindow && chatbotClose) {
     chatbotToggle.addEventListener('click', () => {
         chatbotWindow.classList.add('active');
@@ -34,9 +44,23 @@ chatInputs.forEach((input, index) => {
 });
 
 function sendMessage(input) {
+    addMessage(input);
+    if(input.value && stompClient) {
+        let chatMessage = {
+            // "senderId": user.id,
+            "senderName": user.name,
+            "messageType": "CHAT",
+            "content": input.value
+        }
+        console.log(chatMessage);
+        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+    }
+    input.value = '';
+}
+
+function addMessage(input) {
     const messagesContainer = input.closest('.chat-main, .chatbot-window')
         .querySelector('.chat-messages, .chatbot-messages');
-    
     // Create new message element
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message sent';
@@ -53,13 +77,37 @@ function sendMessage(input) {
     
     // Add message to container
     messagesContainer.appendChild(messageDiv);
-    
-    // Clear input
-    input.value = '';
-    
     // Scroll to bottom
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
 }
 
-window.onload = () => {
+async function connect() {
+    socket = new SockJS('http://localhost:8080/ws');
+    stompClient = await Stomp.over(socket);
+    
+    await stompClient.connect({}, 
+        (frame) => {
+            console.log('Connected:', frame);
+            stompClient.send(`/app/chat.addUser`, {}, JSON.stringify({
+                // "senderId": user.id,
+                "senderName": user.name,
+                "messageType": "JOIN"
+            })); 
+
+            stompClient.subscribe(`/topic/public`, 
+                (message) => {
+                    addMessage(message.body);
+                }
+            );
+        },
+        (error) => { 
+            console.log('Error:', error);
+        }
+    );
 }
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await connect();
+});
+

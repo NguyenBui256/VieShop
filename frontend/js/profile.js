@@ -4,6 +4,7 @@ const address = JSON.parse(sessionStorage.getItem('user-address'));
 const product = JSON.parse(sessionStorage.getItem('products'));
 var orders = [];
 
+document.getElementById('editButton').addEventListener('click', toggleEditMode);
 function toggleEditMode() {
     const inputs = document.querySelectorAll('.form-input');
     const editButton = document.getElementById('editButton');
@@ -35,6 +36,8 @@ function toggleChangePassword(show) {
     const overlay = document.getElementById('changePasswordOverlay');
     overlay.style.display = show ? 'flex' : 'none';
 }
+document.getElementById('changePasswordBtn').addEventListener('click', () => toggleChangePassword(true));
+document.getElementById('togglePasswordBtn').addEventListener('click', () => toggleChangePassword(false));
 
 document.getElementById('profileForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -54,7 +57,7 @@ async function fetch_order() {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem('access-token')
+                "Authorization": "Bearer " + getCookie('access-token')
             }
         });
         const data = await response.json();

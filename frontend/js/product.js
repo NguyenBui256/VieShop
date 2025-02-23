@@ -1,24 +1,28 @@
+import { getCookie } from "./auth.js";
+
 // Sample product data
+var products = [];
 const FETCH_PRODUCTS_API = "http://localhost:8080/api/v1/products";
 
 async function fetch_products() {
     console.log("alo");
     try {
-        console.log("Bearer " + localStorage.getItem('access-token'));
+        console.log("Bearer " + getCookie('access-token'));
         const response = await fetch(FETCH_PRODUCTS_API, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem('access-token')
+                "Authorization": "Bearer " + getCookie('access-token')
             }
         });
-        jsonObject = await response.json();
+        let jsonObject = await response.json();
         products = jsonObject.data.content;
         console.log("Danh sách sản phẩm:", products);
         sessionStorage.setItem('products', JSON.stringify(products));
         renderProducts(products);
     } catch (error) {
         // Xử lý lỗi
+        console.log(error);
         document.getElementById("productsGrid").innerHTML = `<p>Không thể tải sản phẩm. Vui lòng thử lại sau.</p>`;
     }
 }

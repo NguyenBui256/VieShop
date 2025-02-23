@@ -1,3 +1,5 @@
+import { getCookie } from "./auth.js";
+
 const ADDRESS_URL = 'http://localhost:8080/api/v1/address/personal-address';
 
 // Hàm thêm địa chỉ mẫu (chạy ví dụ)
@@ -9,7 +11,7 @@ async function loadAddresses() {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + localStorage.getItem('access-token')
+            "Authorization": "Bearer " + getCookie('access-token')
         }
     })
     const data = await response.json();
@@ -43,6 +45,8 @@ async function loadAddresses() {
 function addNewAddress() {
     alert('Chức năng thêm địa chỉ mới đang phát triển.');
 }
+
+document.getElementById('addAddressBtn').addEventListener('click', addNewAddress);
 
 function viewAddress(index) {
     alert(`Xem chi tiết địa chỉ ${index + 1}`);

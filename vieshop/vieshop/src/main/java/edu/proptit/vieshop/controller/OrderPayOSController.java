@@ -1,29 +1,29 @@
 package edu.proptit.vieshop.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.proptit.vieshop.dto.CreatePaymentLinkRequestBody;
+import edu.proptit.vieshop.model.orders.PaymentTransaction;
+import edu.proptit.vieshop.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import vn.payos.PayOS;
-import vn.payos.type.CheckoutResponseData;
-import vn.payos.type.ItemData;
-import vn.payos.type.PaymentData;
-import vn.payos.type.PaymentLinkData;
+import vn.payos.type.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/order-payos")
+@RequiredArgsConstructor
 public class OrderPayOSController {
     private final PayOS payOS;
-
-    public OrderPayOSController(PayOS payOS) {
-        super();
-        this.payOS = payOS;
-    }
+    private final PaymentService paymentService;
 
     @GetMapping("/{orderId}")
     public ObjectNode getOrderById(@PathVariable("orderId") long orderId) {
@@ -58,7 +58,7 @@ public class OrderPayOSController {
             final String cancelUrl = RequestBody.getCancelUrl();
             final int price = RequestBody.getPrice();
             // Gen order code
-            String currentTimeString = String.valueOf(String.valueOf(new Date().getTime()));
+            String currentTimeString = String.valueOf(new Date().getTime());
             long orderCode = Long.parseLong(currentTimeString.substring(currentTimeString.length() - 6));
 
             ItemData item = ItemData.builder().name(productName).price(price).quantity(1).build();
@@ -83,15 +83,22 @@ public class OrderPayOSController {
         }
     }
 
-    @PutMapping("/{orderId}")
-    public ObjectNode cancelOrder(@PathVariable("orderId") int orderId) {
+    @PutMapping("/cancel/{transactionId}")
+    public ObjectNode cancelOrder(@PathVariable("transactionId") int transactionId) {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode response = objectMapper.createObjectNode();
         try {
-            PaymentLinkData order = payOS.cancelPaymentLink(orderId, null);
+            PaymentLinkData order = payOS.cancelPaymentLink(transactionId, null);
             response.set("data", objectMapper.valueToTree(order));
             response.put("error", 0);
             response.put("message", "ok");
+
+            // Update transaction status to DB
+            PaymentTransaction payment = paymentService.findByTransactionId(String.valueOf(transactionId));
+            payment.setStatus("CANCEL");
+            payment.setUpdatedAt(LocalDateTime.now());
+            paymentService.updatePayment(payment);
+
             return response;
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,15 +109,30 @@ public class OrderPayOSController {
         }
     }
 
-    @PostMapping("/confirm-webhook")
-    public ObjectNode confirmWebhook(@RequestBody Map<String, String> requestBody) {
+    @PostMapping(path = "/payos_transfer_handler")
+    public ObjectNode payosTransferHandler(@RequestBody ObjectNode body)
+            throws IllegalArgumentException, JsonProcessingException {
+
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode response = objectMapper.createObjectNode();
+        body.put("success", true);
+        Webhook webhookBody = objectMapper.treeToValue(body, Webhook.class);
+
         try {
-            String str = payOS.confirmWebhook(requestBody.get("webhookUrl"));
-            response.set("data", objectMapper.valueToTree(str));
+            // Init Response
             response.put("error", 0);
-            response.put("message", "ok");
+            response.put("message", "Webhook delivered");
+            response.set("data", null);
+
+            // Update transaction status to DB
+            String transactionId = String.valueOf(body.get("data").get("orderCode"));
+
+            payOS.verifyPaymentWebhookData(webhookBody);
+            PaymentTransaction payment = paymentService.findByTransactionId(transactionId);
+            payment.setStatus("PAID");
+            payment.setUpdatedAt(LocalDateTime.now());
+            paymentService.updatePayment(payment);
+
             return response;
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,43 +143,4 @@ public class OrderPayOSController {
         }
     }
 
-    @PostMapping("/create-payment-link")
-    public void checkout(HttpServletRequest request, HttpServletResponse httpServletResponse) {
-        try {
-            final String baseUrl = getBaseUrl(request);
-            final String productName = "Mì tôm hảo hảo ly";
-            final String description = "Thanh toan don hang";
-            final String returnUrl = baseUrl + "/success";
-            final String cancelUrl = baseUrl + "/cancel";
-            final int price = 2000;
-            // Gen order code
-            String currentTimeString = String.valueOf(new Date().getTime());
-            long orderCode = Long.parseLong(currentTimeString.substring(currentTimeString.length() - 6));
-            ItemData item = ItemData.builder().name(productName).quantity(1).price(price).build();
-            PaymentData paymentData = PaymentData.builder().orderCode(orderCode).amount(price).description(description)
-                    .returnUrl(returnUrl).cancelUrl(cancelUrl).item(item).build();
-            CheckoutResponseData data = payOS.createPaymentLink(paymentData);
-
-            String checkoutUrl = data.getCheckoutUrl();
-
-            httpServletResponse.setHeader("Location", checkoutUrl);
-            httpServletResponse.setStatus(302);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String getBaseUrl(HttpServletRequest request) {
-        String scheme = request.getScheme();
-        String serverName = request.getServerName();
-        int serverPort = request.getServerPort();
-        String contextPath = request.getContextPath();
-
-        String url = scheme + "://" + serverName;
-        if ((scheme.equals("http") && serverPort != 80) || (scheme.equals("https") && serverPort != 443)) {
-            url += ":" + serverPort;
-        }
-        url += contextPath;
-        return url;
-    }
 }

@@ -2,6 +2,29 @@
 const LOGIN_URL = 'http://localhost:8080/api/v1/auth/sign-in'
 const REGIS_URL = 'http://localhost:8080/api/v1/auth/sign-up'
 
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+export function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+}
+
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
     loginForm.addEventListener('submit', function(e) {
@@ -28,8 +51,9 @@ async function login(username, password) {
         alert(data.message);
     } else {
         localStorage.setItem('isLogin', true);
-        localStorage.setItem('access-token', data.data.access_token);
+        // localStorage.setItem('access-token', data.data.access_token);
         localStorage.setItem('user', JSON.stringify(data.data.user));
+        setCookie('access-token', data.data.access_token, 1);
         window.location.href = 'index.html';
     }
 }

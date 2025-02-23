@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "ChatbotMessages")
+@Table(name = "chatbot_messages")
 public class ChatbotMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
