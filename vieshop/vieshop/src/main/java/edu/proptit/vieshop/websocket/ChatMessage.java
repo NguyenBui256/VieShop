@@ -1,7 +1,11 @@
 package edu.proptit.vieshop.websocket;
 
 import edu.proptit.vieshop.common.MessageType;
+import edu.proptit.vieshop.common.ReceiverType;
 import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -9,9 +13,13 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class ChatMessage {
-
-    private MessageType type;
+    private String messageId;
+    private MessageType messageType;
     private String content;
-    private String sender;
-
+    private String senderName;
+    private String senderId;
+    private String receiverName;
+    private String receiverId;
+    private ReceiverType receiverType;
+    private LocalDateTime timestamp;
 }

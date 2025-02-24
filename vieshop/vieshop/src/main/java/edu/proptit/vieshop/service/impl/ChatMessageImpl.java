@@ -22,8 +22,8 @@ public class ChatMessageImpl implements ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
 
     @Override
-    public List<Message> findByChatRoomId(Long id) {
-        return chatMessageRepository.findByRoomId(id);
+    public List<Message> findAllByUserId(Long userId) {
+        return chatMessageRepository.findAllByUserId(userId);
     }
 
     @Override

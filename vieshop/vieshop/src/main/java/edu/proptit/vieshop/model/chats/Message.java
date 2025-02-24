@@ -1,5 +1,6 @@
 package edu.proptit.vieshop.model.chats;
 
+import edu.proptit.vieshop.common.MessageType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,14 +16,11 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "chat_room_id", nullable = false)
-    private Long chatRoomId;
-
     @Column(name = "sender_id", nullable = false)
     private Long senderId;
 
     @Column(name = "message_type", nullable = false)
-    private String messageType;
+    private MessageType messageType;
 
     @Column(name = "content", nullable = false)
     private String content;

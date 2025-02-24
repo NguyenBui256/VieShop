@@ -6,7 +6,7 @@ import edu.proptit.vieshop.model.chats.Message;
 import java.util.List;
 
 public interface ChatMessageService {
-    List<Message> findByChatRoomId(Long id);
+    List<Message> findAllByUserId(Long userId);
     String saveMessage(ChatMessageDTO messageDTO);
     String deleteMessage(Long id);
     void sendMessage(ChatMessageDTO messageDTO);
