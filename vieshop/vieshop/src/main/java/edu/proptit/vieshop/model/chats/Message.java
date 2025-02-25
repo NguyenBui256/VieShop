@@ -1,6 +1,7 @@
 package edu.proptit.vieshop.model.chats;
 
 import edu.proptit.vieshop.common.MessageType;
+import edu.proptit.vieshop.common.ReceiverType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,14 +20,20 @@ public class Message {
     @Column(name = "sender_id", nullable = false)
     private Long senderId;
 
+    @Column(name = "receiver_id", nullable = false)
+    private Long receiverId;
+
+    @Column(name = "receiver_type", nullable = false)
+    private ReceiverType receiverType;
+
+    @Column(name = "receiver_name", nullable = false)
+    private String receiverName;
+
     @Column(name = "message_type", nullable = false)
     private MessageType messageType;
 
     @Column(name = "content", nullable = false)
     private String content;
-
-    @Column(name = "is_read", nullable = false)
-    private Boolean isRead;
 
     @Column(name = "is_delete", nullable = false)
     private Boolean isDelete;

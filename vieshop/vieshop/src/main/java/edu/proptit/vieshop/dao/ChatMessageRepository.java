@@ -11,5 +11,8 @@ import java.util.List;
 @Repository
 public interface ChatMessageRepository extends JpaRepository<Message, Long> {
     @Query(value = "SELECT * from chat_messages c where c.sender_id = :userId and c.is_delete = false", nativeQuery = true)
-    List<Message> findAllByUserId(@Param("{userId}") Long userId);
+    List<Message> findAllByUserId(@Param("userId") Long userId);
+
+    @Query(value = "SELECT * from chat_messages c where c.sender_id = :userId and c.is_delete = false", nativeQuery = true)
+    List<Message> findContactOfUser(@Param("userId") Long userId);
 }

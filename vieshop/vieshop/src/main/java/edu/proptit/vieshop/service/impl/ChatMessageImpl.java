@@ -3,7 +3,6 @@ package edu.proptit.vieshop.service.impl;
 import edu.proptit.vieshop.dao.ChatMessageRepository;
 import edu.proptit.vieshop.dto.ChatMessageDTO;
 import edu.proptit.vieshop.dto.CustomException;
-import edu.proptit.vieshop.kafka.CustomMessageConverter;
 import edu.proptit.vieshop.model.chats.Message;
 import edu.proptit.vieshop.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ChatMessageImpl implements ChatMessageService {
-    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ChatMessageRepository chatMessageRepository;
 
     @Override
@@ -52,7 +50,5 @@ public class ChatMessageImpl implements ChatMessageService {
     @Override
     @Async
     public void sendMessage(ChatMessageDTO messageDTO) {
-        kafkaTemplate.send("message", messageDTO);
-        kafkaTemplate.setMessageConverter(new CustomMessageConverter());
     }
 }
