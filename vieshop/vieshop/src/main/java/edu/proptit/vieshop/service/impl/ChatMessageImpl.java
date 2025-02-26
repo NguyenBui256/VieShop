@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -20,8 +21,13 @@ public class ChatMessageImpl implements ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
 
     @Override
-    public List<Message> findAllByUserId(Long userId) {
-        return chatMessageRepository.findAllByUserId(userId);
+    public List<Message> findMessageBetween(Long userId, Long receiverId) {
+        return chatMessageRepository.findAllByUserId(userId, receiverId);
+    }
+
+    @Override
+    public List<Message> findUserContact(Long userId) {
+        return chatMessageRepository.findContactOfUser(userId);
     }
 
     @Override
@@ -33,7 +39,6 @@ public class ChatMessageImpl implements ChatMessageService {
         message.setContent(messageDTO.getContent());
         message.setCreatedAt(LocalDateTime.now());
         message.setIsDelete(false);
-        message.setIsRead(false);
         chatMessageRepository.save(message);
         return "OK";
     }

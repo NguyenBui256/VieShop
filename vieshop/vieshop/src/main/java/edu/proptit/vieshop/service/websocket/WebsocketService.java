@@ -1,4 +1,4 @@
-package edu.proptit.vieshop.websocket;
+package edu.proptit.vieshop.service.websocket;
 
 import edu.proptit.vieshop.dto.ChatMessageDTO;
 import lombok.RequiredArgsConstructor;

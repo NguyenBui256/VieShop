@@ -24,15 +24,15 @@ public class Message {
     private Long receiverId;
 
     @Column(name = "receiver_type", nullable = false)
-    private ReceiverType receiverType;
+    private String receiverType;
 
     @Column(name = "receiver_name", nullable = false)
     private String receiverName;
 
     @Column(name = "message_type", nullable = false)
-    private MessageType messageType;
+    private String messageType;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "is_delete", nullable = false)

@@ -1,3 +1,22 @@
+const MESSAGE_URL = "http://localhost:8080/api/v1/messages";
+const WEBSOCKET_URL = 'http://localhost:8080/ws';
+
+// Toggle chatbot window
+const chatbotToggle = document.querySelector('.chatbot-toggle');
+const chatbotWindow = document.querySelector('.chatbot-window');
+const chatbotClose = document.querySelector('.chatbot-close');
+
+const user = JSON.parse(localStorage.getItem('user'));
+
+var receiverId;
+var receiverName;
+var receiverType;
+
+var messageList = [];
+var conversations = [];
+var socket = null;
+var stompClient = null;
+
 function getCookie(cname) {
     let name = cname + "=";
     let decodedCookie = decodeURIComponent(document.cookie);
@@ -13,24 +32,6 @@ function getCookie(cname) {
     }
     return "";
 }
-
-const MESSAGE_URL = "http://localhost:8080/api/v1/messages";
-
-// Toggle chatbot window
-const chatbotToggle = document.querySelector('.chatbot-toggle');
-const chatbotWindow = document.querySelector('.chatbot-window');
-const chatbotClose = document.querySelector('.chatbot-close');
-
-const user = JSON.parse(localStorage.getItem('user'));
-
-const urlParams = new URLSearchParams(window.location.search);
-const receiverId = urlParams.get('id');
-const receiverName = urlParams.get('name');
-const receiverType = urlParams.get('type') || 'USER';
-
-var messageList = [];
-var socket = null;
-var stompClient = null;
 
 // Initialize chatbot UI if elements exist
 if (chatbotToggle && chatbotWindow && chatbotClose) {
@@ -93,7 +94,7 @@ function sendMessage(input) {
 }
 
 function connect() {
-    socket = new SockJS('http://localhost:8080/ws');
+    socket = new SockJS(WEBSOCKET_URL);
     stompClient = Stomp.over(socket);
     
     stompClient.connect({}, 
@@ -136,24 +137,13 @@ function connect() {
     );
 }
 
-async function loadConversationHistory(conversationId) {
+async function loadConversationHistory(receiverId) {
     try {
-        const response = await fetch(`${MESSAGE_URL}/conversation/${conversationId}/${user.id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getCookie('access-token')}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch conversation history');
-        }
-
-        const messages = await response.json();
-        
-        // Clear existing messages in the UI
         const chatMessages = document.querySelector('.chat-messages');
+        chatMessages.innerHTML = 'Loading...';
+        const messages = conversations[receiverId].messages;
+        console.log(messages);
+        // Clear existing messages in the UI
         if (chatMessages) {
             chatMessages.innerHTML = '';
             
@@ -184,14 +174,17 @@ async function fetch_and_render_messages() {
             throw new Error('Failed to fetch messages');
         }
 
-        const messages = await response.json();
-        const conversations = groupMessagesByConversation(messages);
+        messageList = await response.json();
+        console.log(messageList.data);
+        conversations = groupMessagesByConversation(messageList.data);
         renderAllConversations(conversations);
+        console.log(conversations);
         
         // If we're in a specific conversation view, setup the chat UI
         if (receiverId) {
             setupChatView(receiverId, receiverName);
         }
+        return;
     } catch (error) {
         console.error('Error fetching messages:', error);
     }
@@ -200,38 +193,39 @@ async function fetch_and_render_messages() {
 function groupMessagesByConversation(messages) {
     const conversations = {};
     
-    messages.forEach(message => {
+    for(const message of messages) {
         let conversationId;
         let conversationName;
-        let conversationAvatar;
-        let lastActivity = new Date(message.timestamp);
+        let conversationType;
+        let lastActivity = message.created_at || formatTime(new Date());
+        console.log(lastActivity);
         
         // Determine if the user is sender or receiver
         if (message.senderId === user.id) {
             conversationId = message.receiverId;
             conversationName = message.receiverName;
-            conversationAvatar = message.receiverAvatar || 'https://via.placeholder.com/40';
+            conversationType = message.receiverType || 'https://via.placeholder.com/40';
         } else {
             conversationId = message.senderId;
             conversationName = message.senderName;
-            conversationAvatar = message.senderAvatar || 'https://via.placeholder.com/40';
+            conversationType = message.receiverType || 'https://via.placeholder.com/40';
         }
 
         if (!conversations[conversationId]) {
             conversations[conversationId] = {
-                id: conversationId,
-                name: conversationName,
-                avatar: conversationAvatar,
+                receiverId: conversationId,
+                receiverName: conversationName,
+                receiverType: conversationType,
                 messages: [],
-                lastActivity: lastActivity
+                timestamp: lastActivity
             };
         } else if (lastActivity > new Date(conversations[conversationId].lastActivity)) {
             // Update last activity if this message is newer
-            conversations[conversationId].lastActivity = lastActivity;
+            conversations[conversationId].timestamp = lastActivity;
         }
         
         conversations[conversationId].messages.push(message);
-    });
+    };
 
     // Sort messages within each conversation by timestamp
     Object.values(conversations).forEach(conversation => {
@@ -254,25 +248,30 @@ function renderAllConversations(conversations) {
 
     sortedConversations.forEach(conversation => {
         const lastMessage = conversation.messages[conversation.messages.length - 1];
-        const isActive = conversation.id === parseInt(receiverId);
+        const isActive = conversation.receiverId === parseInt(receiverId);
         
         const messagePreview = lastMessage.content.length > 30 ? 
             lastMessage.content.substring(0, 30) + '...' : 
             lastMessage.content;
             
         const conversationElement = document.createElement('div');
-        conversationElement.className = `chat-user ${isActive ? 'active' : ''}`;
+        conversationElement.className = `chat-user`;
         conversationElement.innerHTML = `
             <img src="${conversation.avatar}" alt="User avatar">
             <div class="chat-user-info">
-                <h4>${conversation.name}</h4>
+                <h4>${conversation.receiverName}</h4>
                 <p>${messagePreview}</p>
-                <small>${formatTime(lastMessage.timestamp)}</small>
+                <small>${formatTime(lastMessage.createdAt)}</small>
             </div>
         `;
 
         conversationElement.addEventListener('click', () => {
-            window.location.href = `chat.html?id=${conversation.id}&name=${conversation.name}&type=USER`;
+            receiverId = conversation.receiverId;
+            receiverName = conversation.receiverName;
+            receiverType = conversation.receiverType;
+            chatUsersList.querySelectorAll('.chat-user').forEach(user => user.classList.remove('active'));
+            conversationElement.classList.add('active');
+            loadConversationHistory(receiverId);
         });
 
         chatUsersList.appendChild(conversationElement);
@@ -297,30 +296,13 @@ function setupChatView(conversationId, conversationName) {
 }
 
 function addMessageToUI(message) {
-    // Parse message if it's a string
-    if (typeof message === 'string') {
-        try {
-            message = JSON.parse(message);
-        } catch (e) {
-            console.error('Error parsing message:', e);
-            return;
-        }
-    }
-
     const currentUserId = user.id;
-    
-    // Determine the chat box to use
     let targetConversationId;
     
-    if (message.senderId === currentUserId) {
-        targetConversationId = message.receiverId;
-    } else {
-        targetConversationId = message.senderId;
-    }
-    
     // If we're in the conversation view that matches this message
-    const chatMain = document.querySelector(`.chat-main[data-conversation-id="${targetConversationId}"]`);
+    const chatMain = document.querySelector(`.chat-main`);
     if (chatMain) {
+        console.log("ALALALALAL");
         const chatMessages = chatMain.querySelector('.chat-messages');
         if (chatMessages) {
             const messageClass = message.senderId === currentUserId ? 'sent' : 'received';
@@ -329,7 +311,7 @@ function addMessageToUI(message) {
             messageDiv.className = `message ${messageClass}`;
             messageDiv.innerHTML = `
                 <p>${message.content}</p>
-                <span class="time">${formatTime(message.timestamp)}</span>
+                <span class="time">${formatTime(message.createdAt)}</span>
             `;
             
             chatMessages.appendChild(messageDiv);
@@ -388,6 +370,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Then fetch and render messages
     await fetch_and_render_messages();
+    
+
     
     // If we're in a specific conversation, scroll to bottom of chat
     const chatMessages = document.querySelector('.chat-messages');

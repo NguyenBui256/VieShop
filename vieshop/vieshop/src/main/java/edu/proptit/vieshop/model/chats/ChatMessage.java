@@ -1,10 +1,9 @@
-package edu.proptit.vieshop.websocket;
+package edu.proptit.vieshop.model.chats;
 
 import edu.proptit.vieshop.common.MessageType;
 import edu.proptit.vieshop.common.ReceiverType;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter

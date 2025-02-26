@@ -1,5 +1,6 @@
-package edu.proptit.vieshop.websocket;
+package edu.proptit.vieshop.controller;
 
+import edu.proptit.vieshop.model.chats.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;

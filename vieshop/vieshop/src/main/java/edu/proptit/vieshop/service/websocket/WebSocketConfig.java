@@ -1,4 +1,4 @@
-package edu.proptit.vieshop.websocket;
+package edu.proptit.vieshop.service.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

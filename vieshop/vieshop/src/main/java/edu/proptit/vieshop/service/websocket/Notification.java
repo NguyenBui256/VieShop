@@ -1,4 +1,4 @@
-package edu.proptit.vieshop.websocket;
+package edu.proptit.vieshop.service.websocket;
 
 import edu.proptit.vieshop.common.NotificationStatus;
 import lombok.*;
