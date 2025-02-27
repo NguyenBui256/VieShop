@@ -38,7 +38,6 @@ public class AuthController {
     @PostMapping("/logout")
     public CustomResponse<?> logout(HttpServletRequest request) {
         final String jwt = request.getHeader("Authorization").substring(7);
-        System.out.println(jwt);
         return new CustomResponse<>().message(authenticationService.logout(jwt));
     }
 }

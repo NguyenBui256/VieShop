@@ -8,9 +8,6 @@ spring:
     password: Theshanon25062004@
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-
-
-
 jwt:
   signerKey: "bb249fa35f9459ffa73393868b4fce1636e059eb95b56ffbc3867817d528452165a628478607bd33ff58dc53e38707a111b40a21f7b8655a9a770125f2519816"
 
