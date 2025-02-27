@@ -75,20 +75,20 @@ function sendMessage(input) {
             receiverName: receiverName || "Unknown",
             receiverId: receiverId ? parseInt(receiverId) : null,
             receiverType: receiverType,
-            timestamp: new Date().toISOString()
         }
+        stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+        chatMessage.createdAt = new Date().toISOString();
+        console.log(chatMessage);
         
         if (!chatMessage.receiverId) {
             console.error("No receiver ID specified");
             return;
         }
         
-        // Add message to UI immediately for better UX
-        const localMessage = {...chatMessage};
-        addMessageToUI(localMessage);
+        conversations[receiverId].messages.push(chatMessage);
+        addMessageToUI(chatMessage);
         
         // Send to server
-        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
     }
     input.value = '';
 }
@@ -102,15 +102,17 @@ function connect() {
             // Subscribe to public channel
             stompClient.subscribe(`/topic/public`, 
                 (message) => {
+                    console.log("Received user message:", message);
                     const receivedMessage = JSON.parse(message.body);
                     addMessageToUI(receivedMessage);
                 }
             );
-            
-            // Subscribe to user's private channel
+
             stompClient.subscribe(`/user/${user.id}/queue/messages`, 
                 (message) => {
+                    console.log("Received chat message:", message);
                     const receivedMessage = JSON.parse(message.body);
+                    conversations[receivedMessage['senderId']].messages.push(receivedMessage);
                     addMessageToUI(receivedMessage);
                 }
             );
@@ -266,6 +268,7 @@ function renderAllConversations(conversations) {
         `;
 
         conversationElement.addEventListener('click', () => {
+            document.querySelector('.chat-main').setAttribute('style', 'display: flex');
             receiverId = conversation.receiverId;
             receiverName = conversation.receiverName;
             receiverType = conversation.receiverType;
@@ -297,7 +300,6 @@ function setupChatView(conversationId, conversationName) {
 
 function addMessageToUI(message) {
     const currentUserId = user.id;
-    let targetConversationId;
     
     // If we're in the conversation view that matches this message
     const chatMain = document.querySelector(`.chat-main`);
@@ -329,6 +331,23 @@ function addMessageToUI(message) {
 function formatTime(timestamp) {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatLocalDateTime(date) {
+    if (!(date instanceof Date)) {
+        throw new Error("Invalid date object");
+    }
+    
+    const pad = (num) => String(num).padStart(2, '0');
+    
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1); // Tháng bắt đầu từ 0
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
 
 function showNotification(sender, content) {
@@ -366,7 +385,7 @@ function createNotification(sender, content) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     // First connect to WebSocket
-    connect();
+
     
     // Then fetch and render messages
     await fetch_and_render_messages();
@@ -378,6 +397,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (chatMessages) {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
+    connect();
 });
 
 window.addEventListener('beforeunload', function() {

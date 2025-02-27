@@ -3,85 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VieShop - Quản lý cửa hàng</title>
-    <link rel="icon" type="image/x-icon" href="assets/logo.png">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/shop.css">
-    <link rel="stylesheet" href="css/shop_manage.css">
-    <link rel="stylesheet" href="assets/fontawesome-free-6.7.2-web/css/all.min.css">
+    <title>Shop Management - VieShop</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <header class="header">
+    <nav class="navbar">
         <div class="container">
-            <div class="nav-wrapper">
-                <a href="index.html" class="logo">VieShop</a>
-                <div class="nav-menu">
-                    <a href="index.html" class="nav-button">
-                        <i data-lucide="package"></i>
-                        <span>Sản phẩm</span>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 2rem;">
+                    <a href="/" style="text-decoration: none;">
+                        <h1 style="color: var(--primary-blue); margin: 0;">VieShop</h1>
                     </a>
-                    <a href="shop-manage.html" class="nav-button active">
-                        <i class="fa-solid fa-store"></i>
-                        <span>Quản lý cửa hàng</span>
-                    </a>
-                    <a href="cart.html" class="cart-button">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        <span class="cart-badge">0</span>
-                    </a>
-                    <a href="profile.html" class="nav-button">
-                        <i class="fa-solid fa-user"></i>
-                    </a>
-                    <a href="chat.html" class="nav-button active">
-                        <i class="fa-solid fa-message"></i>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="/shop" class="nav-link">View Shop</a>
+                        <a href="/dashboard" class="nav-link">Dashboard</a>
+                    </div>
+                </div>
+                <div class="user-menu" id="userMenu">
+                    <a href="/profile" class="nav-link">
+                        <i class="fas fa-user"></i> Admin
                     </a>
                 </div>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="container">
-        <h1 class="page-title">Quản lý cửa hàng</h1>
-        <button class="btn btn-primary" id="addShopBtn">Thêm cửa hàng</button>
-        <div class="shop-list" id="shopList">
-            <!-- Danh sách cửa hàng sẽ được thêm ở đây -->
+    <main class="container" style="padding: var(--spacing-xl) 0;">
+        <div style="display: grid; grid-template-columns: 250px 1fr; gap: var(--spacing-xl);">
+            <!-- Sidebar -->
+            <aside>
+                <div class="card">
+                    <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                        <button class="btn btn-outline active" data-tab="products">
+                            <i class="fas fa-box"></i> Products
+                        </button>
+                        <button class="btn btn-outline" data-tab="orders">
+                            <i class="fas fa-shopping-bag"></i> Orders
+                        </button>
+                        <button class="btn btn-outline" data-tab="customers">
+                            <i class="fas fa-users"></i> Customers
+                        </button>
+                        <button class="btn btn-outline" data-tab="analytics">
+                            <i class="fas fa-chart-bar"></i> Analytics
+                        </button>
+                        <button class="btn btn-outline" data-tab="settings">
+                            <i class="fas fa-cog"></i> Settings
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="card">
+                <!-- Products Tab -->
+                <div id="productsTab" class="tab-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                        <h2>Products Management</h2>
+                        <button class="btn btn-primary" id="addProductBtn" onclick="openAddProductModal()">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="searchProduct" placeholder="Search products..." style="max-width: 300px;">
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; margin-top: var(--spacing-lg);">
+                        <thead>
+                            <tr style="background: var(--gray-50);">
+                                <th style="padding: var(--spacing-md); text-align: left;">Product</th>
+                                <th style="padding: var(--spacing-md); text-align: left;">Category</th>
+                                <th style="padding: var(--spacing-md); text-align: left;">Price</th>
+                                <th style="padding: var(--spacing-md); text-align: left;">Stock</th>
+                                <th style="padding: var(--spacing-md); text-align: left;">Status</th>
+                                <th style="padding: var(--spacing-md); text-align: left;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTable">
+                            <!-- Products will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Add/Edit Product Modal -->
+                <div id="productModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <h3 id="modalTitle">Add New Product</h3>
+                        <form id="productForm">
+                            <div class="form-group">
+                                <label class="form-label">Product Name</label>
+                                <input type="text" class="form-control" id="productName" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <select class="form-control" id="productCategory" required>
+                                    <!-- Categories will be loaded dynamically -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Price</label>
+                                <input type="number" class="form-control" id="productPrice" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stock</label>
+                                <input type="number" class="form-control" id="productStock" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" id="productDescription" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Images</label>
+                                <input type="file" class="form-control" id="productImages" multiple accept="image/*">
+                            </div>
+                            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                                <button type="button" class="btn btn-outline" onclick="closeProductModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Product</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Orders Tab -->
+                <div id="ordersTab" class="tab-content" style="display: none;">
+                    <h2 class="mb-3">Orders Management</h2>
+                    <div class="orders-list">
+                        <!-- Orders will be dynamically loaded here -->
+                    </div>
+                </div>
+
+                <!-- Customers Tab -->
+                <div id="customersTab" class="tab-content" style="display: none;">
+                    <h2 class="mb-3">Customer Management</h2>
+                    <div class="customers-list">
+                        <!-- Customers will be dynamically loaded here -->
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div id="analyticsTab" class="tab-content" style="display: none;">
+                    <h2 class="mb-3">Analytics Dashboard</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg);">
+                        <div class="card text-center">
+                            <h3>Total Sales</h3>
+                            <p class="price">15,000,000₫</p>
+                            <p style="color: var(--gray-600);">This Month</p>
+                        </div>
+                        <div class="card text-center">
+                            <h3>Orders</h3>
+                            <p style="font-size: 2rem; color: var(--primary-blue);">150</p>
+                            <p style="color: var(--gray-600);">This Month</p>
+                        </div>
+                        <div class="card text-center">
+                            <h3>Customers</h3>
+                            <p style="font-size: 2rem; color: var(--primary-blue);">1,250</p>
+                            <p style="color: var(--gray-600);">Total</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settingsTab" class="tab-content" style="display: none;">
+                    <h2 class="mb-3">Shop Settings</h2>
+                    <form id="shopSettingsForm">
+                        <div class="form-group">
+                            <label class="form-label">Shop Name</label>
+                            <input type="text" class="form-control" id="shopName">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="shopDescription" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Email</label>
+                            <input type="email" class="form-control" id="shopEmail">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </main>
 
-    <!-- Modal thêm/sửa cửa hàng -->
-    <div class="modal" id="shopModal">
-        <div class="modal-content">
-            <h2 id="modalTitle">Thêm cửa hàng</h2>
-            <form id="shopForm">
-                <div class="form-group">
-                    <label for="shopName">Tên cửa hàng</label>
-                    <input type="text" id="shopName" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="shopAddress">Địa chỉ cửa hàng</label>
-                    <input type="text" id="shopAddress" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="shopPhoneNumberr">Số điện thoại</label>
-                    <input type="text" id="shopPhoneNumber" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="shopDescription">Mô tả</label>
-                    <input type="text" id="shopDescription" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="shopAvatarUrl">Tải ảnh đại diện</label>
-                    <input type="text" id="shopAvatarUrl" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="shopBannerUrl">Tải ảnh bìa</label>
-                    <input type="text" id="shopBannerUrl" class="form-input" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Lưu</button>
-                <button type="button" id="closeModalBtn" class="btn btn-secondary">Hủy</button>
-            </form>
+    <footer style="background-color: var(--gray-800); color: var(--white); padding: var(--spacing-lg) 0;">
+        <div class="container text-center">
+            <p>&copy; 2024 VieShop. All rights reserved.</p>
         </div>
-    </div>
+    </footer>
 
-    <script type="module" src="js/shop-manage.js"></script>
+    <script src="js/supabase.mjs" type="module"></script>
+    <script src="js/notification.js"></script>
+    <script src="js/category.js"></script>
+    <script src="js/shop-manage.js"></script>
+    <script src="js/shop-product.js"></script>
 </body>
 </html>

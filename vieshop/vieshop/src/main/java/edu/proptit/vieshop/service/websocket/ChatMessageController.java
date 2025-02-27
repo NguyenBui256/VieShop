@@ -1,4 +1,4 @@
-package edu.proptit.vieshop.controller;
+package edu.proptit.vieshop.service.websocket;
 
 import edu.proptit.vieshop.dto.CustomResponse;
 import edu.proptit.vieshop.service.ChatMessageService;

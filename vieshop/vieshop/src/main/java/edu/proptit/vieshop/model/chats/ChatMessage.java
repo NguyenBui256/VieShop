@@ -20,5 +20,5 @@ public class ChatMessage {
     private String receiverName;
     private String receiverId;
     private ReceiverType receiverType;
-    private LocalDateTime timestamp;
+    private String createdAt;
 }

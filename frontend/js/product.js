@@ -23,7 +23,7 @@ async function fetch_products() {
     } catch (error) {
         // Xử lý lỗi
         console.log(error);
-        document.getElementById("productsGrid").innerHTML = `<p>Không thể tải sản phẩm. Vui lòng thử lại sau.</p>`;
+        document.getElementById("productsContainer").innerHTML = `<p>Không thể tải sản phẩm. Vui lòng thử lại sau.</p>`;
     }
 }
 
@@ -72,28 +72,28 @@ function updateCartBadge() {
 
 // Initialize product grid
 function initializeProducts() {
-    const productsGrid = document.getElementById('productsGrid');
-    if (productsGrid) {
-        productsGrid.innerHTML = products.forEach((product) => {
+    const productsContainer = document.getElementById('productsContainer');
+    if (productsContainer) {
+        productsContainer.innerHTML = products.forEach((product) => {
             const productItem = document.createElement('div');
             productItem.innerHTML = createProductCard(product);
-            productsGrid.appendChild(productItem);
+            productsContainer.appendChild(productItem);
         });
     }
     updateCartBadge();
 }
 
 function renderProducts(filteredProducts) {
-    const productsGrid = document.getElementById('productsGrid');
-    productsGrid.innerHTML = '';
+    const productsContainer = document.getElementById('productsContainer');
+    productsContainer.innerHTML = '';
 
     if (filteredProducts.length === 0) {
-        productsGrid.innerHTML = '<p>Không tìm thấy sản phẩm nào.</p>';
+        productsContainer.innerHTML = '<p>Không tìm thấy sản phẩm nào.</p>';
         return;
     }
 
     filteredProducts.forEach(product => {
-        productsGrid.innerHTML += createProductCard(product);
+        productsContainer.innerHTML += createProductCard(product);
     });
 }
 
@@ -130,8 +130,8 @@ function filterProducts() {
     renderProducts(filteredProducts);
 }
 
-window.onload = () => {
-    fetch_products();
+window.onload = async () => {
+    await fetch_products();
     updateCartBadge();
 }
 

@@ -22,8 +22,7 @@ public class AuthController {
 
     @PostMapping("/auth/sign-up")
     public CustomResponse<?> signUp(@RequestBody @Valid UserDTO user) {
-        authenticationService.signUp(user);
-        return new CustomResponse<>().message("Success");
+        return new CustomResponse<>().message(authenticationService.signUp(user));
     }
 
     @PostMapping("/auth/sign-in")

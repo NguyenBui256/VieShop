@@ -41,14 +41,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
     
     @Override
-    public void signUp(UserDTO user) {
+    public String signUp(UserDTO user) {
         log.info("Request: {}", user);
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Username already exists");
         }
         User toSaveUser = new User(user);
+        toSaveUser.setPasswordHash(passwordEncoder.encode(user.getPassword()));
         log.info("User: {}", user);
         userService.createUser(toSaveUser);
+        return "OK";
     }
     
     @Override

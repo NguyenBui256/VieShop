@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class Notification {
+    private Long receiverId;
     private NotificationStatus status;
     private String message;
     private String title;

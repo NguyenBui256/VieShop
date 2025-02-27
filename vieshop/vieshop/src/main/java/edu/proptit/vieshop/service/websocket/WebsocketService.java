@@ -25,11 +25,4 @@ public class WebsocketService {
                 notifcation
         );
     }
-
-    @MessageMapping("chat")
-    @SendTo("/topic/messages")
-    public void sendMessage(String userId, ChatMessageDTO messageDTO) {
-        String time = new SimpleDateFormat("HH:mm").format(new Date());
-
-    }
 }
