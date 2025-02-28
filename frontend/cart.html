@@ -16,7 +16,7 @@
                         <h1 style="color: var(--primary-blue); margin: 0;">VieShop</h1>
                     </a>
                     <div style="display: flex; gap: 1rem;">
-                        <a href="/shop" class="nav-link">Shop</a>
+                        <a href="/product.html" class="nav-link">Shop</a>
                         <a href="/about" class="nav-link">About</a>
                         <a href="/contact" class="nav-link">Contact</a>
                     </div>
@@ -65,20 +65,20 @@
                 <div style="margin: var(--spacing-lg) 0;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
                         <span>Subtotal</span>
-                        <span>1,500,000₫</span>
+                        <span id="totalPrice">0₫</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
                         <span>Shipping</span>
-                        <span>30,000₫</span>
+                        <span>0₫</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
                         <span>Tax</span>
-                        <span>150,000₫</span>
+                        <span>0đ</span>
                     </div>
                     <div style="border-top: 1px solid var(--gray-200); margin: var(--spacing-md) 0; padding-top: var(--spacing-md);">
                         <div style="display: flex; justify-content: space-between; font-weight: 600;">
                             <span>Total</span>
-                            <span class="price">1,680,000₫</span>
+                            <span class="price">0</span>
                         </div>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary" style="width: 100%;">Proceed to Checkout</button>
+                <button id="checkoutBtn" class="btn btn-primary" style="width: 100%;">Proceed to Checkout</button>
             </div>
         </div>
 
@@ -100,7 +100,7 @@
             <i class="fas fa-shopping-cart" style="font-size: 4rem; color: var(--gray-300);"></i>
             <h3 style="margin: var(--spacing-md) 0;">Your cart is empty</h3>
             <p style="color: var(--gray-600); margin-bottom: var(--spacing-lg);">Add items to your cart to continue shopping</p>
-            <a href="/shop" class="btn btn-primary">Continue Shopping</a>
+            <a href="/product.html" class="btn btn-primary">Continue Shopping</a>
         </div>
     </main>
 
@@ -131,6 +131,7 @@
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
+    <script type="module" src="/js/cart.js"></script>
+    <script type="module" src="/js/cart-checkout.js"></script>
 </body>
 </html>

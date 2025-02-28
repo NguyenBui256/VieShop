@@ -12,13 +12,13 @@
         <div class="container">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center; gap: 2rem;">
-                    <a href="/" style="text-decoration: none;">
-                        <h1 style="color: var(--primary-blue); margin: 0;">VieShop</h1>
+                    <a href="/welcome.html" style="text-decoration: none;">
+                        <h1 id="logo" style="color: var(--primary-blue); margin: 0;">VieShop</h1>
                     </a>
                     <div style="display: flex; gap: 1rem;">
-                        <a href="/shop" class="nav-link">Shop</a>
-                        <a href="/about" class="nav-link">About</a>
-                        <a href="/contact" class="nav-link">Contact</a>
+                        <a href="/product.html" class="nav-link">Shop</a>
+                        <a href="#" class="nav-link">About</a>
+                        <a href="#" class="nav-link">Contact</a>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 1rem;">
@@ -32,124 +32,155 @@
     </nav>
 
     <main class="container">
-        <div style="display: grid; grid-template-columns: 250px 1fr; gap: var(--spacing-lg); padding: var(--spacing-lg) 0;">
-            <!-- Filters Sidebar -->
-            <aside class="card" style="height: fit-content;">
-                <h3>Filters</h3>
-                <div class="form-group">
-                    <label class="form-label">Categories</label>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="category" value="electronics">
-                            Electronics
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="category" value="fashion">
-                            Fashion
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="category" value="home">
-                            Home & Living
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="category" value="beauty">
-                            Health & Beauty
-                        </label>
+        <!-- Shop Info Section -->
+        <div class="card" style="margin: var(--spacing-lg) 0;">
+            <img id="shopBanner" src="" alt="Shop Banner" style="width: 100%; height: 200px; object-fit: cover; margin-bottom: var(--spacing-lg);">
+            <div style="display: flex; gap: var(--spacing-lg); align-items: flex-start;">
+                <img id="shopAvatar" src="" alt="Shop Avatar" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+                <div>
+                    <h2 id="shopName">Shop Name</h2>
+                    <p id="shopDescription" style="color: var(--gray-600);">Shop description</p>
+                    <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-md);">
+                        <p><i class="fas fa-map-marker-alt"></i> <span id="shopAddress">Address</span></p>
+                        <p><i class="fas fa-phone"></i> <span id="shopPhone">Phone</span></p>
+                        <p><i class="fas fa-star"></i> <span id="shopRating">0</span></p>
                     </div>
+                    <button class="btn btn-primary" id="editInfoBtn" style="margin-top: var(--spacing-md);">
+                        <i class="fas fa-edit"></i> Edit Shop Info
+                    </button>
+                    <button class="btn btn-danger" id="deleteShopBtn" style="margin-top: var(--spacing-md); margin-left: var(--spacing-md);">
+                        <i class="fas fa-trash"></i> Delete Shop
+                    </button>
                 </div>
+            </div>
+        </div>
 
-                <div class="form-group">
-                    <label class="form-label">Price Range</label>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <input type="number" class="form-control" placeholder="Min" style="width: 100px;">
-                        <span>-</span>
-                        <input type="number" class="form-control" placeholder="Max" style="width: 100px;">
-                    </div>
-                </div>
+        <!-- Products Section -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                <h2>Products</h2>
+                <button class="btn btn-primary" id="addProductBtn">
+                    <i class="fas fa-plus"></i> Add Product
+                </button>
+            </div>
 
-                <div class="form-group">
-                    <label class="form-label">Rating</label>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="rating" value="4">
-                            4★ & above
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="rating" value="3">
-                            3★ & above
-                        </label>
-                    </div>
-                </div>
+            <div style="display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search products..." style="max-width: 300px;">
+                <select class="form-control" id="priceFilter">
+                    <option value="">Filter by Price</option>
+                    <option value="low">Under 200,000 VND</option>
+                    <option value="medium">200,000 - 500,000 VND</option>
+                    <option value="high">Over 500,000 VND</option>
+                </select>
+                <select class="form-control" id="categoryFilter">
+                    <option value="">Filter by Category</option>
+                </select>
+            </div>
 
-                <button class="btn btn-primary" style="width: 100%;">Apply Filters</button>
-            </aside>
-
-            <!-- Products Grid -->
-            <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
-                    <h2>All Products</h2>
-                    <div style="display: flex; gap: 1rem; align-items: center;">
-                        <label class="form-label" style="margin: 0;">Sort by:</label>
-                        <select class="form-control" style="width: auto;">
-                            <option>Newest</option>
-                            <option>Price: Low to High</option>
-                            <option>Price: High to Low</option>
-                            <option>Most Popular</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="product-grid" id="productsContainer">
-                    <!-- Products will be dynamically loaded here -->
-                </div>
-
-                <!-- Pagination -->
-                <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: var(--spacing-xl);">
-                    <button class="btn btn-outline">Previous</button>
-                    <button class="btn btn-primary">1</button>
-                    <button class="btn btn-outline">2</button>
-                    <button class="btn btn-outline">3</button>
-                    <button class="btn btn-outline">Next</button>
-                </div>
+            <div id="myShopGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--spacing-lg);">
+                <!-- Products will be dynamically loaded here -->
             </div>
         </div>
     </main>
 
-    <footer style="background-color: var(--gray-800); color: var(--white); padding: var(--spacing-xl) 0; margin-top: var(--spacing-xl);">
-        <div class="container">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-xl);">
-                <div>
-                    <h3>VieShop</h3>
-                    <p>Your trusted shopping destination in Vietnam</p>
+    <!-- Edit Shop Modal -->
+    <div id="editShopModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Edit Shop Information</h3>
+            <form id="editShopForm">
+                <div class="form-group">
+                    <label class="form-label">Shop Name</label>
+                    <input type="text" class="form-control" id="editShopName" required>
                 </div>
-                <div>
-                    <h3>Quick Links</h3>
-                    <ul style="list-style: none; padding: 0;">
-                        <li><a href="/about.html" class="nav-link">About Us</a></li>
-                        <li><a href="/contact.html" class="nav-link">Contact</a></li>
-                        <li><a href="/terms.html" class="nav-link">Terms & Conditions</a></li>
-                    </ul>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" id="editShopDescription" rows="3" required></textarea>
                 </div>
-                <div>
-                    <h3>Contact Us</h3>
-                    <p>Email: support@vieshop.com</p>
-                    <p>Phone: +84 123 456 789</p>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-control" id="editShopAddress" required>
                 </div>
-                <div>
-                    <h3>Follow Us</h3>
-                    <div style="display: flex; gap: 1rem;">
-                        <a href="#" class="nav-link"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="nav-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="nav-link"><i class="fab fa-twitter"></i></a>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-control" id="editShopPhone" required>
                 </div>
-            </div>
-            <div style="text-align: center; margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--gray-600);">
-                <p>&copy; 2024 VieShop. All rights reserved.</p>
-            </div>
+                <div class="form-group">
+                    <label for="editShopRating">Số sao đánh giá</label>
+                    <input type="number" id="editShopRating" class="form-control" min="0" max="5" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Avatar Image</label>
+                    <input type="file" class="form-control" id="avatarFileInput" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Banner Image</label>
+                    <input type="file" class="form-control" id="bannerFileInput" accept="image/*">
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-outline" id="editShopCloseModalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content" style="display: none">
+            <h3 id="modalTitle">Add New Product</h3>
+            <form id="productForm">
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-control" id="productCategory" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Product Name</label>
+                    <input type="text" class="form-control" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price</label>
+                    <input type="number" class="form-control" id="productPrice" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" class="form-control" id="productQuantity" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" id="productDescription" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Main Image</label>
+                    <input type="file" class="form-control" id="productAvaImage" accept="image/*" required>
+                    <div id="avaImagePreviewContainer"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Additional Images</label>
+                    <input type="file" class="form-control" id="productImage" multiple accept="image/*">
+                    <div id="imagePreviewContainer"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Variants</label>
+                    <button type="button" class="btn btn-outline" id="addVariantBtn">Add Variant</button>
+                    <div id="variantsGrid"></div>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-outline" id="editProductCloseModalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer style="background-color: var(--gray-800); color: var(--white); padding: var(--spacing-lg) 0;">
+        <div class="container text-center">
+            <p>&copy; 2024 VieShop. All rights reserved.</p>
         </div>
     </footer>
 
-    <script type="module" src="/js/product.js"></script>
+    <!-- <script src="js/supabase.mjs" type="module"></script> -->
+    <script src="js/shop.js" type="module"></script>
+    <script src="js/shop-product.js" type="module"></script>
+    <script src="js/category.js" type="module"></script>
 </body>
 </html>

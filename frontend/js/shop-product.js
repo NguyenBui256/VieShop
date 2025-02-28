@@ -5,6 +5,8 @@ const SHOP_PRODUCT_URL = 'http://localhost:8080/api/v1/products/belong-to-shop';
 
 var products = []; // Mảng lưu danh sách sản phẩm
 var editingProductIndex = null;
+const url = new URL(window.location.href);
+var shopId = url.searchParams.get('id');
 
 const myShopGrid = document.getElementById("myShopGrid");
 const addProductBtn = document.getElementById("addProductBtn");
@@ -25,11 +27,13 @@ addProductBtn.addEventListener("click", () => {
     modalTitle.textContent = "Thêm sản phẩm";
     editingProductIndex = null;
     productForm.reset();
-    productModal.classList.add("active");
+    productModal.style.display = "flex";
+    productModal.querySelector('.modal-content').style.display = "block";
 });
 
 editProductCloseModalBtn.addEventListener("click", () => {
-    productModal.classList.remove("active");
+    productModal.style.display = "none";
+    productModal.querySelector('.modal-content').style.display = "none";
 });
 
 productForm.addEventListener("submit", async (e) => {
@@ -41,7 +45,7 @@ productForm.addEventListener("submit", async (e) => {
         "shopId": shopId,
         "categoryId": productForm.productCategory.value,
         "name": productForm.productName.value,
-        "description": productForm.product,
+        "description": productForm.productDescription.value,
         "basePrice": productForm.productPrice.value,
         "stockQuantity": productForm.productQuantity.value,
         "rating": 0,
@@ -65,7 +69,8 @@ productForm.addEventListener("submit", async (e) => {
     } else {
         addProduct(newProduct);
     }
-    productModal.classList.remove("active");
+    productModal.style.display = "none";
+    productModal.querySelector('.modal-content').style.display = "none";
     productForm.reset();
     renderProducts();
 });
@@ -144,7 +149,7 @@ async function addProduct() {
             "shopId": shopId,
             "categoryId": productForm.productCategory.value,
             "name": productForm.productName.value,
-            "description": productForm.product,
+            "description": productForm.productDescription.value,
             "basePrice": productForm.productPrice.value,
             "stockQuantity": productForm.productQuantity.value
         })
@@ -162,17 +167,100 @@ function editProduct(index) {
     const product = products[index];
     editingProductIndex = index;
     modalTitle.textContent = "Sửa sản phẩm";
+    
+    // Fill in basic product info
     productForm.productName.value = product.name;
     productForm.productPrice.value = product.basePrice;
-    productModal.classList.add("active");
+    productForm.productQuantity.value = product.stockQuantity;
+    productForm.productDescription.value = product.description;
+    productForm.productCategory.value = product.categoryId;
+
+    // Clear existing image previews
+    avaImagePreviewContainer.innerHTML = "";
+    imagePreviewContainer.innerHTML = "";
+
+    // Display product avatar preview
+    for (const image of product.productImageList) {
+        if (image.isThumbnail) {
+            const container = document.createElement("div");
+            container.classList.add("image-preview");
+            
+            const img = document.createElement("img");
+            img.classList.add("preview-image");
+            img.src = image.imageUrl;
+            img.alt = "Product Avatar";
+
+            const closeButton = document.createElement("button");
+            closeButton.classList.add("delete-btn");
+            closeButton.textContent = "×";
+            closeButton.addEventListener("click", () => {
+                container.remove();
+                productAvaImageInput.value = "";
+            });
+
+            container.appendChild(img);
+            container.appendChild(closeButton);
+            avaImagePreviewContainer.appendChild(container);
+            break;
+        }
+    }
+
+    // Display additional product images preview
+    for (const image of product.productImageList) {
+        if (!image.isThumbnail) {
+            const container = document.createElement("div");
+            container.classList.add("image-preview");
+            
+            const img = document.createElement("img");
+            img.classList.add("preview-image");
+            img.src = image.imageUrl;
+            img.alt = "Product Image";
+
+            const closeButton = document.createElement("button");
+            closeButton.classList.add("delete-btn");
+            closeButton.textContent = "×";
+            closeButton.addEventListener("click", () => {
+                container.remove();
+            });
+
+            container.appendChild(img);
+            container.appendChild(closeButton);
+            imagePreviewContainer.appendChild(container);
+        }
+    }
+
+    // Display product variants
+    const variantsGrid = document.getElementById("variantsGrid");
+    variantsGrid.innerHTML = "";
     
+    if (product.productVariants && product.productVariants.length > 0) {
+        product.productVariants.forEach((variant, idx) => {
+            const variantDiv = document.createElement("div");
+            variantDiv.classList.add("variant-item");
+            variantDiv.innerHTML = `
+                <input type="text" class="form-control" value="${variant.name}" placeholder="Variant Name">
+                <input type="number" class="form-control" value="${variant.price}" placeholder="Price">
+                <input type="number" class="form-control" value="${variant.quantity}" placeholder="Quantity">
+                <button type="button" class="btn btn-danger remove-variant">×</button>
+            `;
+            
+            variantDiv.querySelector('.remove-variant').addEventListener('click', () => {
+                variantDiv.remove();
+            });
+            
+            variantsGrid.appendChild(variantDiv);
+        });
+    }
+
+    productModal.style.display = "flex";
+    productModal.querySelector('.modal-content').style.display = "block";
 }
 
 async function deleteProduct(index) {
-    confirm("Bạn có chắc muốn xóa sản phẩm này?");
-    if(confirm == true) {
+    let cf = confirm("Bạn có chắc muốn xóa sản phẩm này?");
+    if(cf == true) {
         let productId = products[index].id;
-        fetch(PRODUCT_URL+"/"+productId, {
+        const response = await fetch(PRODUCT_URL+"/"+productId, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -252,3 +340,46 @@ function removeFileFromInput(inputElement, fileToRemove) {
 window.editProduct = editProduct; // Để gọi được từ HTML
 window.deleteProduct = deleteProduct; // Để gọi được từ HTML
 
+const variantsGrid = document.getElementById("variantsGrid");
+const addVariantBtn = document.getElementById("addVariantBtn");
+
+addVariantBtn.addEventListener("click", function (e) {
+    let source = e.target();
+    addVariant(source.getAttribute("data-index"));
+});
+
+function addVariant(variant) {
+    const variantDiv = document.createElement("div");
+    variantDiv.classList.add("variant-item");
+
+    variantDiv.innerHTML = `
+        <label>Thuộc tính:</label>
+        <input type="text" class="variant-attribute" placeholder="Ví dụ: Cỡ, Màu, ..." value="${variant.name}">
+        
+        <label>Giá trị:</label>
+        <input type="text" class="variant-value" placeholder="Ví dụ: Xanh, Đỏ, ..." value="${variant.value}">
+        
+        <label>Số lượng:</label>
+        <input type="number" class="variant-quantity" min="0" value="0" value="{}">
+        
+        <label>Giá riêng:</label>
+        <input type="number" class="variant-price" min="0" value="0">
+
+        <button class="edit-variant">Sửa</button>
+        <button class="delete-variant">Xóa</button>
+    `;
+
+    // Nút xóa
+    variantDiv.querySelector(".delete-variant").addEventListener("click", function () {
+        variantsGrid.removeChild(variantDiv);
+    });
+
+    // Nút sửa (cho phép chỉnh sửa lại input)
+    variantDiv.querySelector(".edit-variant").addEventListener("click", function () {
+        let inputs = variantDiv.querySelectorAll("input");
+        inputs.forEach(input => input.toggleAttribute("disabled"));
+    });
+
+    // Thêm vào variantsGrid
+    variantsGrid.appendChild(variantDiv);
+}

@@ -54,7 +54,7 @@ async function login(username, password) {
         // localStorage.setItem('access-token', data.data.access_token);
         localStorage.setItem('user', JSON.stringify(data.data.user));
         setCookie('access-token', data.data.access_token, 1);
-        window.location.href = 'index.html';
+        window.location.href = 'welcome.html';
     }
 }
 
