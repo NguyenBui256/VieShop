@@ -1,6 +1,7 @@
-package edu.proptit.vieshop.websocket;
+package edu.proptit.vieshop.service.websocket;
 
 import edu.proptit.vieshop.common.MessageType;
+import edu.proptit.vieshop.dto.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -27,7 +28,7 @@ public class WebsocketEventListener {
                     .senderName(username)
                     .senderId(userId)
                     .build();
-            messagingTemplate.convertAndSend("/topic/public", chatMessageDTO);
+            messagingTemplate.convertAndSend("/user/public", chatMessageDTO);
         }
     }
 }

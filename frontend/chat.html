@@ -3,93 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VieShop - Chat</title>
-    <link rel="icon" type="image/x-icon" href="assets/logo.png">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/chat.css">
-    <link rel="stylesheet" href="assets/fontawesome-free-6.7.2-web/css/all.min.css">
+    <title>Chat Support - VieShop</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .chat-container {
+            height: calc(100vh - 300px);
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .chat-header {
+            padding: var(--spacing-md);
+            background: var(--primary-blue);
+            color: var(--white);
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .message {
+            max-width: 70%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .message.sent {
+            background: var(--primary-blue);
+            color: var(--white);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input {
+            padding: var(--spacing-md);
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 24px;
+            font-size: var(--font-size-base);
+        }
+
+        .chat-input button {
+            padding: 12px 24px;
+            border-radius: 24px;
+        }
+
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: var(--spacing-xs);
+        }
+    </style>
 </head>
 <body>
-    <header class="header">
+    <nav class="navbar">
         <div class="container">
-            <div class="nav-wrapper">
-                <a href="index.html" class="logo">VieShop</a>
-                <div class="nav-menu">
-                    <a href="index.html" class="nav-button">
-                        <i data-lucide="package"></i>
-                        <span>Sản phẩm</span>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 2rem;">
+                    <a href="/" style="text-decoration: none;">
+                        <h1 style="color: var(--primary-blue); margin: 0;">VieShop</h1>
                     </a>
-                    <a href="shop-manage.html" class="nav-button active">
-                        <i class="fa-solid fa-store"></i>
-                        <span>Quản lý cửa hàng</span>
-                    </a>
-                    <a href="cart.html" class="cart-button">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        <span class="cart-badge">0</span>
-                    </a>
-                    <a href="profile.html" class="nav-button">
-                        <i class="fa-solid fa-user"></i>
-                    </a>
-                    <a href="chat.html" class="nav-button active">
-                        <i class="fa-solid fa-message"></i>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="/shop" class="nav-link">Shop</a>
+                        <a href="/about" class="nav-link">About</a>
+                        <a href="/contact" class="nav-link">Contact</a>
+                    </div>
+                </div>
+                <div class="user-menu" id="userMenu">
+                    <a href="/profile" class="nav-link">
+                        <i class="fas fa-user"></i>
                     </a>
                 </div>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="chat-container">
-        <div class="chat-sidebar">
-            <div class="chat-search">
-                <input type="text" placeholder="Tìm kiếm tin nhắn...">
-            </div>
-            <div class="chat-users">
-                <div class="chat-user active">
-                    <img src="https://via.placeholder.com/40" alt="User avatar">
-                    <div class="chat-user-info">
-                        <h4>Nguyễn Văn A</h4>
-                        <p>Xin chào bạn!</p>
-                    </div>
-                </div>
-                <div class="chat-user">
-                    <img src="https://via.placeholder.com/40" alt="User avatar">
-                    <div class="chat-user-info">
-                        <h4>Trần Thị B</h4>
-                        <p>Sản phẩm còn hàng không?</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="chat-main">
-            <!-- Render tin nhắn với người dùng -->
+    <main class="container" style="padding: var(--spacing-xl) 0;">
+        <div class="chat-container">
             <div class="chat-header">
-                <img src="https://via.placeholder.com/40" alt="User avatar">
-                <a href="chat.html?id=${.id}"><h3>Nguyễn Văn A</h3></a>
+                <div style="width: 40px; height: 40px; background: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-headset" style="color: var(--primary-blue); font-size: 20px;"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0;">Customer Support</h3>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: var(--font-size-sm);">
+                        <span class="online-indicator"></span>
+                        Online
+                    </div>
+                </div>
             </div>
-            <!-- Nội dung tin nhắn -->
-            <div class="chat-messages">
+
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will be dynamically added here -->
                 <div class="message received">
-                    <p>Xin chào bạn!</p>
-                    <span class="time">10:30</span>
-                </div>
-                <div class="message sent">
-                    <p>Chào bạn, mình có thể giúp gì được không?</p>
-                    <span class="time">10:31</span>
+                    Hello! How can I help you today?
                 </div>
             </div>
+
             <div class="chat-input">
-                <input type="text" placeholder="Nhập tin nhắn...">
-                <button class="send-button">
-                    <i class="fa-solid fa-paper-plane"></i>
+                <input type="text" id="messageInput" placeholder="Type your message..." class="form-control">
+                <button class="btn btn-primary" id="sendButton">
+                    <i class="fas fa-paper-plane"></i> Send
                 </button>
             </div>
         </div>
     </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <script type="module" src="js/chat.js"></script>
-    <script type="module" src="js/cart.js"></script>
-    
-</body> 
+    <footer style="background-color: var(--gray-800); color: var(--white); padding: var(--spacing-lg) 0;">
+        <div class="container text-center">
+            <p>&copy; 2024 VieShop. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/supabase.mjs" type="module"></script>
+    <script src="js/notification.js"></script>
+    <script src="js/chat.js"></script>
+</body>
 </html>

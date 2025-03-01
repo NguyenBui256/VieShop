@@ -24,6 +24,9 @@ public class ProductVariant {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "value", nullable = false)
+    private String value;
+
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 

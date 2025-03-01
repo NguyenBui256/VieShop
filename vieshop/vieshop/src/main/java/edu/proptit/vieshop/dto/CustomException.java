@@ -42,4 +42,11 @@ public class CustomException extends RuntimeException {
         this.errorMessage = errorMessage;
         this.httpStatus = httpStatus;
     }
+
+    public CustomException notFound(String type) {
+        this.httpStatus = HttpStatus.NOT_FOUND;
+        this.errorCode = "404";
+        this.errorMessage = type + " not found";
+        return this;
+    }
 }

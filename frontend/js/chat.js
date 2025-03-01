@@ -1,6 +1,5 @@
-import { getCookie } from "./auth";
-
 const MESSAGE_URL = "http://localhost:8080/api/v1/messages";
+const WEBSOCKET_URL = 'http://localhost:8080/ws';
 
 // Toggle chatbot window
 const chatbotToggle = document.querySelector('.chatbot-toggle');
@@ -9,15 +8,32 @@ const chatbotClose = document.querySelector('.chatbot-close');
 
 const user = JSON.parse(localStorage.getItem('user'));
 
-const urlParams = new URLSearchParams(window.location.search);
-const receiverId = urlParams.get('id');
-const receiverName = urlParams.get('name');
-const receiverType = urlParams.get('type');
+var receiverId;
+var receiverName;
+var receiverType;
 
 var messageList = [];
+var conversations = [];
 var socket = null;
 var stompClient = null;
 
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+}
+
+// Initialize chatbot UI if elements exist
 if (chatbotToggle && chatbotWindow && chatbotClose) {
     chatbotToggle.addEventListener('click', () => {
         chatbotWindow.classList.add('active');
@@ -51,236 +67,337 @@ chatInputs.forEach((input, index) => {
 function sendMessage(input) {
     if(input.value && stompClient) {
         let chatMessage = {
-            messageId: "msg" + Date.now(), // Tạo ID tạm thời
+            messageId: "msg" + Date.now(), // Temporary ID
             messageType: "CHAT",
             content: input.value,
-            senderName: user.username, // Tên người dùng hiện tại
-            senderId: user.id, // ID người dùng hiện tại
-            receiverName: "nguyenvana", // Sẽ được điền sau khi gửi lên server
-            receiverId: 1,
-            receiverType: "USER",
-            timestamp: new Date().toISOString()
+            senderName: user.username,
+            senderId: user.id,
+            receiverName: receiverName || "Unknown",
+            receiverId: receiverId ? parseInt(receiverId) : null,
+            receiverType: receiverType,
         }
-        addMessageToUI(chatMessage);
+        stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+        chatMessage.createdAt = new Date().toISOString();
         console.log(chatMessage);
-        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+        
+        if (!chatMessage.receiverId) {
+            console.error("No receiver ID specified");
+            return;
+        }
+        
+        conversations[receiverId].messages.push(chatMessage);
+        addMessageToUI(chatMessage);
+        
+        // Send to server
     }
     input.value = '';
 }
 
 function connect() {
-    socket = new SockJS('http://localhost:8080/ws');
+    socket = new SockJS(WEBSOCKET_URL);
     stompClient = Stomp.over(socket);
     
     stompClient.connect({}, 
         (frame) => {
+            // Subscribe to public channel
             stompClient.subscribe(`/topic/public`, 
                 (message) => {
-                    addMessageToUI(message.body);
+                    console.log("Received user message:", message);
+                    const receivedMessage = JSON.parse(message.body);
+                    addMessageToUI(receivedMessage);
+                }
+            );
+
+            stompClient.subscribe(`/user/${user.id}/queue/messages`, 
+                (message) => {
+                    console.log("Received chat message:", message);
+                    const receivedMessage = JSON.parse(message.body);
+                    conversations[receivedMessage['senderId']].messages.push(receivedMessage);
+                    addMessageToUI(receivedMessage);
                 }
             );
 
             console.log('Connected:', frame);
+            
+            // Notify server that user is online
             stompClient.send(`/app/chat.addUser`, {}, JSON.stringify({
                 "senderId": user.id,
                 "senderName": user.username,
                 "messageType": "JOIN"
             })); 
             
+            // Load message history for current conversation if we're in a chat view
+            if (receiverId) {
+                loadConversationHistory(receiverId);
+            }
         },
         (error) => { 
-            console.log('Error:', error);
+            console.log('Error connecting to WebSocket:', error);
+            // Implement reconnection logic here
+            setTimeout(connect, 5000);
         }
     );
+}
+
+async function loadConversationHistory(receiverId) {
+    try {
+        const chatMessages = document.querySelector('.chat-messages');
+        chatMessages.innerHTML = 'Loading...';
+        const messages = conversations[receiverId].messages;
+        console.log(messages);
+        // Clear existing messages in the UI
+        if (chatMessages) {
+            chatMessages.innerHTML = '';
+            
+            // Render messages in order
+            messages.forEach(message => {
+                addMessageToUI(message);
+            });
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    } catch (error) {
+        console.error('Error fetching conversation history:', error);
+    }
+}
+
+async function fetch_and_render_messages() {
+    try {
+        const response = await fetch(`${MESSAGE_URL}/user/${user.id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getCookie('access-token')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch messages');
+        }
+
+        messageList = await response.json();
+        console.log(messageList.data);
+        conversations = groupMessagesByConversation(messageList.data);
+        renderAllConversations(conversations);
+        console.log(conversations);
+        
+        // If we're in a specific conversation view, setup the chat UI
+        if (receiverId) {
+            setupChatView(receiverId, receiverName);
+        }
+        return;
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+    }
 }
 
 function groupMessagesByConversation(messages) {
     const conversations = {};
     
-    messages.forEach(message => {
-        // Xác định ID của cuộc trò chuyện (thường là cặp người gửi-người nhận)
+    for(const message of messages) {
         let conversationId;
-        let otherPersonId;
-        let otherPersonName;
+        let conversationName;
+        let conversationType;
+        let lastActivity = message.created_at || formatTime(new Date());
+        console.log(lastActivity);
         
-        // Giả sử người dùng hiện tại là admin1
-        const currentUserId = "admin1";
-        
-        if (message.senderId === currentUserId) {
+        // Determine if the user is sender or receiver
+        if (message.senderId === user.id) {
             conversationId = message.receiverId;
-            otherPersonId = message.receiverId;
-            otherPersonName = message.receiverName;
+            conversationName = message.receiverName;
+            conversationType = message.receiverType || 'https://via.placeholder.com/40';
         } else {
             conversationId = message.senderId;
-            otherPersonId = message.senderId;
-            otherPersonName = message.senderName;
+            conversationName = message.senderName;
+            conversationType = message.receiverType || 'https://via.placeholder.com/40';
         }
-        
-        // Nếu chưa có conversation này thì tạo mới
+
         if (!conversations[conversationId]) {
             conversations[conversationId] = {
-                id: conversationId,
-                personName: otherPersonName,
-                messages: []
+                receiverId: conversationId,
+                receiverName: conversationName,
+                receiverType: conversationType,
+                messages: [],
+                timestamp: lastActivity
             };
+        } else if (lastActivity > new Date(conversations[conversationId].lastActivity)) {
+            // Update last activity if this message is newer
+            conversations[conversationId].timestamp = lastActivity;
         }
         
-        // Thêm tin nhắn vào cuộc trò chuyện
         conversations[conversationId].messages.push(message);
-    });
-    
-    // Sắp xếp tin nhắn trong mỗi cuộc trò chuyện theo thời gian
+    };
+
+    // Sort messages within each conversation by timestamp
     Object.values(conversations).forEach(conversation => {
-        conversation.messages.sort((a, b) => {
-            return new Date(a.timestamp) - new Date(b.timestamp);
-        });
+        conversation.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
     });
-    
-    return Object.values(conversations);
+
+    return conversations;
 }
 
-// Hàm chính để render tất cả cuộc trò chuyện
-function renderAllConversations(messages) {
-    const conversations = groupMessagesByConversation(messages);
-    const chatContainer = document.getElementById('chat-container');
+function renderAllConversations(conversations) {
+    const chatUsersList = document.querySelector('.chat-users');
+    if (!chatUsersList) return; // Skip if we're not on the conversations page
     
-    // Xóa nội dung cũ
-    chatContainer.innerHTML = '';
-    
-    // Render từng cuộc trò chuyện
-    conversations.forEach(conversation => {
-        const chatBox = renderConversation(conversation);
-        chatBox.setAttribute('data-conversation-id', conversation.id);
-        chatContainer.appendChild(chatBox);
-    });
-}
+    chatUsersList.innerHTML = ''; // Clear existing conversations
 
-function renderConversation(conversation) {
-    const currentUserId = user.username; // Người dùng hiện tại
-    
-    // Lấy tin nhắn cuối cùng để hiển thị preview
-    const lastMessage = conversation.messages[conversation.messages.length - 1];
-    console.log(lastMessage);
-    
-    // Tạo HTML cho box chat
-    const chatBox = document.createElement('div');
-    chatBox.className = 'chat-main';
-    
-    // Header của box chat
-    const chatHeader = document.createElement('div');
-    chatHeader.className = 'chat-header';
-    chatHeader.innerHTML = `
-        <img src="https://via.placeholder.com/40" alt="User avatar">
-        <a href="chat.html?id=${conversation.id}"><h3>${conversation.personName}</h3></a>
-    `;
-    
-    // Nội dung tin nhắn
-    const chatMessages = document.createElement('div');
-    chatMessages.className = 'chat-messages';
-    
-    // Render tất cả tin nhắn trong cuộc trò chuyện
-    conversation.messages.forEach(msg => {
-        const messageClass = msg.senderId === currentUserId ? 'sent' : 'received';
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${messageClass}`;
-        messageDiv.innerHTML = `
-            <p>${msg.content}</p>
-            <span class="time">${formatTime(msg.timestamp)}</span>
-        `;
-        chatMessages.appendChild(messageDiv);
-    });
-    
-    // Input để nhập tin nhắn
-    const chatInput = document.createElement('div');
-    chatInput.className = 'chat-input';
-    chatInput.innerHTML = `
-        <input type="text" placeholder="Nhập tin nhắn...">
-        <button class="send-button">
-            <i class="fa-solid fa-paper-plane"></i>
-        </button>
-    `;
-    
-    // Thêm event listener cho nút gửi
-    chatInput.querySelector('.send-button').addEventListener('click', function() {
-        const inputField = chatInput.querySelector('input');
-        const messageContent = inputField.value.trim();
+    // Convert to array and sort by last activity
+    const sortedConversations = Object.values(conversations).sort(
+        (a, b) => new Date(b.lastActivity) - new Date(a.lastActivity)
+    );
+
+    sortedConversations.forEach(conversation => {
+        const lastMessage = conversation.messages[conversation.messages.length - 1];
+        const isActive = conversation.receiverId === parseInt(receiverId);
         
-        if (messageContent) {
-            sendMessage(conversation.id, messageContent);
-            inputField.value = '';
-        }
-    });
-    
-    // Thêm event listener cho input field (gửi khi nhấn Enter)
-    chatInput.querySelector('input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            const messageContent = this.value.trim();
+        const messagePreview = lastMessage.content.length > 30 ? 
+            lastMessage.content.substring(0, 30) + '...' : 
+            lastMessage.content;
             
-            if (messageContent) {
-                sendMessage(conversation.id, messageContent);
-                this.value = '';
-            }
-        }
+        const conversationElement = document.createElement('div');
+        conversationElement.className = `chat-user`;
+        conversationElement.innerHTML = `
+            <img src="${conversation.avatar}" alt="User avatar">
+            <div class="chat-user-info">
+                <h4>${conversation.receiverName}</h4>
+                <p>${messagePreview}</p>
+                <small>${formatTime(lastMessage.createdAt)}</small>
+            </div>
+        `;
+
+        conversationElement.addEventListener('click', () => {
+            document.querySelector('.chat-main').setAttribute('style', 'display: flex');
+            receiverId = conversation.receiverId;
+            receiverName = conversation.receiverName;
+            receiverType = conversation.receiverType;
+            chatUsersList.querySelectorAll('.chat-user').forEach(user => user.classList.remove('active'));
+            conversationElement.classList.add('active');
+            loadConversationHistory(receiverId);
+        });
+
+        chatUsersList.appendChild(conversationElement);
     });
+}
+
+function setupChatView(conversationId, conversationName) {
+    // Find the chat header element
+    const chatHeader = document.querySelector('.chat-header');
+    if (chatHeader) {
+        // Update chat header with conversation name
+        chatHeader.innerHTML = `
+            <h3>${conversationName}</h3>
+        `;
+    }
     
-    // Ghép các phần lại với nhau
-    chatBox.appendChild(chatHeader);
-    chatBox.appendChild(chatMessages);
-    chatBox.appendChild(chatInput);
-    
-    return chatBox;
+    // Set the conversation ID attribute on the chat main container
+    const chatMain = document.querySelector('.chat-main');
+    if (chatMain) {
+        chatMain.setAttribute('data-conversation-id', conversationId);
+    }
 }
 
 function addMessageToUI(message) {
-    const currentUserId = user.id; // ID người dùng hiện tại
+    const currentUserId = user.id;
     
-    // Tìm box chat tương ứng
-    let chatBoxId;
-    if (message.senderId === currentUserId) {
-        chatBoxId = message.receiverId;
-    } else {
-        chatBoxId = message.senderId;
-    }
-    
-    const chatBox = document.querySelector(`.chat-main[data-conversation-id="${chatBoxId}"]`);
-    
-    if (chatBox) {
-        const chatMessages = chatBox.querySelector('.chat-messages');
-        const messageClass = message.senderId === currentUserId ? 'sent' : 'received';
-        
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${messageClass}`;
-        messageDiv.innerHTML = `
-            <p>${message.content}</p>
-            <span class="time">${formatTime(message.timestamp)}</span>
-        `;
-        
-        chatMessages.appendChild(messageDiv);
-        
-        // Scroll to bottom
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+    // If we're in the conversation view that matches this message
+    const chatMain = document.querySelector(`.chat-main`);
+    if (chatMain) {
+        console.log("ALALALALAL");
+        const chatMessages = chatMain.querySelector('.chat-messages');
+        if (chatMessages) {
+            const messageClass = message.senderId === currentUserId ? 'sent' : 'received';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${messageClass}`;
+            messageDiv.innerHTML = `
+                <p>${message.content}</p>
+                <span class="time">${formatTime(message.createdAt)}</span>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    } else if (message.senderId !== currentUserId) {
+        // If message is from someone else and we're not in that conversation,
+        // we could show a notification here
+        showNotification(message.senderName, message.content);
     }
 }
 
-async function fetch_and_render_messages() {
-    const response = await fetch(MESSAGE_URL+"/user/"+user.id, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + getCookie('access-token')
-        }
-    });
-    const data = await response.json();
-    console.log(data);
-    messageList = data;
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
 
-    renderAllConversations(messageList);
-    return;
+function formatLocalDateTime(date) {
+    if (!(date instanceof Date)) {
+        throw new Error("Invalid date object");
+    }
+    
+    const pad = (num) => String(num).padStart(2, '0');
+    
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1); // Tháng bắt đầu từ 0
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+}
+
+function showNotification(sender, content) {
+    // Check if browser supports notifications
+    if (!("Notification" in window)) {
+        console.log("This browser does not support desktop notification");
+        return;
+    }
+    
+    // Check if permission is already granted
+    if (Notification.permission === "granted") {
+        createNotification(sender, content);
+    }
+    // Otherwise, request permission
+    else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then(function (permission) {
+            if (permission === "granted") {
+                createNotification(sender, content);
+            }
+        });
+    }
+}
+
+function createNotification(sender, content) {
+    const notification = new Notification(sender, {
+        body: content,
+        icon: "path/to/icon.png" // Add your app icon here
+    });
+    
+    notification.onclick = function() {
+        window.focus();
+        this.close();
+    };
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    connect();
+    // First connect to WebSocket
+
+    
+    // Then fetch and render messages
     await fetch_and_render_messages();
+    
+
+    
+    // If we're in a specific conversation, scroll to bottom of chat
+    const chatMessages = document.querySelector('.chat-messages');
+    if (chatMessages) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    connect();
 });
 
 window.addEventListener('beforeunload', function() {
@@ -288,4 +405,3 @@ window.addEventListener('beforeunload', function() {
         socket.close();
     }
 });
-

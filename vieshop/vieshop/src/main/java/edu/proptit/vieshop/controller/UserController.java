@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 @Slf4j
 public class UserController {
     private final UserService userService;
@@ -22,7 +22,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/users/personal-info")
+    @GetMapping("/v1/users/personal-info")
     public CustomResponse<?> getUserById() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User tokenUser = (User) authentication.getPrincipal();
@@ -37,14 +37,14 @@ public class UserController {
         return new CustomResponse<Page<User>>().data(userService.findAll(size, page, sortBy));
     }
 
-    @PutMapping("/users/fix-personal-info")
+    @PutMapping("/v1/users/fix-personal-info")
     public CustomResponse<?> updateUser(@RequestBody UserDTO userDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User tokenUser = (User) authentication.getPrincipal();
         return new CustomResponse<>().message(userService.updateUser(tokenUser.getId(), userDTO));
     }
 
-    @PutMapping("/users/update-password")
+    @PutMapping("/v1/users/update-password")
     public CustomResponse<?> updatePassword(@RequestBody Map<String,String> request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User tokenUser = (User) authentication.getPrincipal();

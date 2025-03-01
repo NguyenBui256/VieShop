@@ -22,8 +22,7 @@ public class AuthController {
 
     @PostMapping("/auth/sign-up")
     public CustomResponse<?> signUp(@RequestBody @Valid UserDTO user) {
-        authenticationService.signUp(user);
-        return new CustomResponse<>().message("Success");
+        return new CustomResponse<>().message(authenticationService.signUp(user));
     }
 
     @PostMapping("/auth/sign-in")
@@ -39,7 +38,6 @@ public class AuthController {
     @PostMapping("/logout")
     public CustomResponse<?> logout(HttpServletRequest request) {
         final String jwt = request.getHeader("Authorization").substring(7);
-        System.out.println(jwt);
         return new CustomResponse<>().message(authenticationService.logout(jwt));
     }
 }

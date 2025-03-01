@@ -1,4 +1,4 @@
-package edu.proptit.vieshop.websocket;
+package edu.proptit.vieshop.service.websocket;
 
 import edu.proptit.vieshop.dto.ChatMessageDTO;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +24,5 @@ public class WebsocketService {
                 "/notification",
                 notifcation
         );
-    }
-
-    @MessageMapping("chat")
-    @SendTo("/topic/messages")
-    public void sendMessage(String userId, ChatMessageDTO messageDTO) {
-        String time = new SimpleDateFormat("HH:mm").format(new Date());
-
     }
 }

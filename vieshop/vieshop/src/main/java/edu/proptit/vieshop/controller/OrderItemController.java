@@ -19,7 +19,7 @@ public class OrderItemController {
 
     @PostMapping("")
     public CustomResponse<?> addOrderItem(@RequestBody OrderItem orderItem) {
-        return new CustomResponse<>().message(orderItemService.createOrderItem(orderItem));
+        return new CustomResponse<>().data(orderItemService.createOrderItem(orderItem));
     }
 
     @PutMapping("/{itemId}")

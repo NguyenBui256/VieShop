@@ -1,7 +1,5 @@
 package edu.proptit.vieshop.dto;
 
-import edu.proptit.vieshop.model.users.User;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 

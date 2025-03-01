@@ -125,13 +125,28 @@ async function loadAddresses() {
         console.log(sampleAddresses);
     }
 
-    const addressSelect = document.getElementById('addressSelect'); // Thẻ <select> chứa danh sách địa chỉ
+    // Create address selection section
+    const orderSummary = document.querySelector('.card[style*="height: fit-content;"]');
+    const addressSection = document.createElement('div');
+    addressSection.className = 'form-group';
+    addressSection.innerHTML = `
+        <label class="form-label">Delivery Address</label>
+        <select id="addressSelect" class="form-control">
+            <option value="" disabled selected>Select delivery address</option>
+        </select>
+    `;
+    
+    // Insert address section before promo code section
+    const promoSection = orderSummary.querySelector('.form-group');
+    orderSummary.insertBefore(addressSection, promoSection);
 
+    // Populate address options
+    const addressSelect = document.getElementById('addressSelect');
     sampleAddresses.forEach((address, index) => {
         const option = document.createElement('option');
         option.className = 'address-item';
         option.setAttribute('address-id', address.id);
-        option.value = index; // Lưu index để có thể lấy dữ liệu khi chọn
+        option.value = index;
         option.textContent = `${address.addressTitle} - ${address.streetAddress}, ${address.ward}, ${address.district}, ${address.province}`;
         addressSelect.appendChild(option);
     });

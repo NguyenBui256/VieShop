@@ -12,8 +12,13 @@ public class ChatMessageController {
     private final ChatMessageService chatMessageService;
 
     @GetMapping("/user/{userId}")
-    public CustomResponse<?> getAll(@PathVariable Long userId) {
-        return new CustomResponse<>().data(chatMessageService.findAllByUserId(userId));
+    public CustomResponse<?> getUserMessage(@PathVariable Long userId) {
+        return new CustomResponse<>().data(chatMessageService.findUserContact(userId));
+    }
+
+    @GetMapping("/between")
+    public CustomResponse<?> getMessageBetween(@RequestParam Long userId, @RequestParam Long receiverId) {
+        return new CustomResponse<>().data(chatMessageService.findMessageBetween(userId, receiverId));
     }
 
     @DeleteMapping("/{messageId}")

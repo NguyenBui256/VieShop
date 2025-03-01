@@ -19,7 +19,7 @@ public class CommentController {
 
     @PostMapping("")
     public CustomResponse<?> createComment(@RequestBody CommentDTO comment) {
-        return new CustomResponse<>().message(commentService.createComment(comment));
+        return new CustomResponse<>().data(commentService.createComment(comment));
     }
 
     @DeleteMapping("/{commentId}")

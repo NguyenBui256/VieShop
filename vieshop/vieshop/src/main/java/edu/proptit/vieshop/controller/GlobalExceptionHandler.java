@@ -1,18 +1,19 @@
 package edu.proptit.vieshop.controller;
 
-import edu.proptit.vieshop.dto.CustomResponse;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-@ControllerAdvice
+import edu.proptit.vieshop.dto.CustomResponse;
+import io.jsonwebtoken.ExpiredJwtException;
+
+@RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler({ChangeSetPersister.NotFoundException.class, NoResourceFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)

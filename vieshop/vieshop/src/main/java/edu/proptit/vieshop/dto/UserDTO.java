@@ -1,22 +1,12 @@
 package edu.proptit.vieshop.dto;
 
-import edu.proptit.vieshop.common.Role;
 import edu.proptit.vieshop.model.users.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
 
 @Getter
 @Setter

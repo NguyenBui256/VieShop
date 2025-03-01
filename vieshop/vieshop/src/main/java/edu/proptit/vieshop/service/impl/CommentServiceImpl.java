@@ -29,7 +29,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public String createComment(CommentDTO commentDTO) {
+    public Comment createComment(CommentDTO commentDTO) {
         Comment commentToDB = new Comment();
         commentToDB.setUserId(commentDTO.getUserId());
         commentToDB.setProductId(commentDTO.getProductId());
@@ -37,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
         commentToDB.setCreatedAt(commentDTO.getCreatedAt());
         commentToDB.setParentCommentId(commentToDB.getParentCommentId());
         commentRepository.save(commentToDB);
-        return "OK";
+        return commentToDB;
     }
 
     @Override

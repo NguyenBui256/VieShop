@@ -6,7 +6,7 @@ import edu.proptit.vieshop.dto.UserDTO;
 import java.util.Map;
 
 public interface AuthenticationService {
-    void signUp(UserDTO user);
+    String signUp(UserDTO user);
 
     Map<String, Object> signIn(Map<String, Object> request);
 
