@@ -1,5 +1,5 @@
 # VieShop
-Shopee clone with Chatbot
+Ecommerce Website
 
 # Database
 ![alt text](vieshop.png)
