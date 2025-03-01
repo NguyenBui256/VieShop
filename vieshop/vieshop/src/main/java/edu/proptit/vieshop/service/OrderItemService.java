@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OrderItemService {
     List<OrderItem> findOrderItemByOrderId(Long orderId);
-    String createOrderItem(OrderItem orderItem);
+    OrderItem createOrderItem(OrderItem orderItem);
     String updateOrderItem(Long id, OrderItem orderItem);
     String deleteOrderItem(Long id);
 }

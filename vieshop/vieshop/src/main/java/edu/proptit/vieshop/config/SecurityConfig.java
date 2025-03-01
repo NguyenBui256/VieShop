@@ -38,22 +38,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests((requests) -> requests
-//                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-//                        .requestMatchers("/api/v1/auth/**").permitAll()
-//                        .requestMatchers("/api/v1/**").hasAnyAuthority("ADMIN", "USER")
-//                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
-//                        .requestMatchers("/ws/**").permitAll()
-//                        .anyRequest().authenticated()
-//                )
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/**").permitAll()
-                        .requestMatchers("/api/admin/**").permitAll()
+                        .requestMatchers("/api/v1/**").hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
                         .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
+//                .authorizeHttpRequests((requests) -> requests
+//                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+//                        .requestMatchers("/api/v1/auth/**").permitAll()
+//                        .requestMatchers("/api/v1/**").permitAll()
+//                        .requestMatchers("/api/admin/**").permitAll()
+//                        .requestMatchers("/ws/**").permitAll()
+//                        .anyRequest().authenticated()
+//                )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )

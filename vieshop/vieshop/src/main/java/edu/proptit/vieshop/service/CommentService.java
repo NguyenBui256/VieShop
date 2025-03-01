@@ -9,7 +9,7 @@ import java.util.List;
 public interface CommentService {
     List<Comment> findByProductId(Long productId);
     Comment getCommentById(Long id);
-    String createComment(CommentDTO commentDTO);
+    Comment createComment(CommentDTO commentDTO);
     String deleteComment(Long id);
 
 }

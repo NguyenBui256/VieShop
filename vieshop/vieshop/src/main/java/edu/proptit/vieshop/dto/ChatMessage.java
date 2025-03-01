@@ -1,11 +1,12 @@
-package edu.proptit.vieshop.model.chats;
+package edu.proptit.vieshop.dto;
 
 import edu.proptit.vieshop.common.MessageType;
 import edu.proptit.vieshop.common.ReceiverType;
-import lombok.*;
-
-import java.time.LocalDateTime;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor

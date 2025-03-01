@@ -23,7 +23,6 @@ public class CustomResponse<T> implements Serializable {
         this.message = message;
     }
 
-
     public CustomResponse<T> data(T data){
         this.data = data;
         return this;

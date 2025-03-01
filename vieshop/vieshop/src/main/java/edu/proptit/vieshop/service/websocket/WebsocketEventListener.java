@@ -1,7 +1,7 @@
 package edu.proptit.vieshop.service.websocket;
 
 import edu.proptit.vieshop.common.MessageType;
-import edu.proptit.vieshop.model.chats.ChatMessage;
+import edu.proptit.vieshop.dto.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

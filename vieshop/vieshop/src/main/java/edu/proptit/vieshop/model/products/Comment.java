@@ -19,7 +19,7 @@ public class Comment {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "column_id", nullable = false)
+    @Column(name = "product_id", nullable = false)
     private Long productId;
 
     @Column(name = "content", nullable = false)

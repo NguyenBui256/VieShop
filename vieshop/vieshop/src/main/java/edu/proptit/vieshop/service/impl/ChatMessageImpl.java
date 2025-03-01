@@ -1,20 +1,17 @@
 package edu.proptit.vieshop.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import edu.proptit.vieshop.dao.ChatMessageRepository;
-import edu.proptit.vieshop.dto.ChatMessageDTO;
+import edu.proptit.vieshop.dto.ChatMessage;
 import edu.proptit.vieshop.dto.CustomException;
-import edu.proptit.vieshop.model.chats.ChatMessage;
 import edu.proptit.vieshop.model.chats.Message;
 import edu.proptit.vieshop.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -54,10 +51,5 @@ public class ChatMessageImpl implements ChatMessageService {
         message.setIsDelete(true);
         chatMessageRepository.save(message);
         return "OK";
-    }
-
-    @Override
-    @Async
-    public void sendMessage(ChatMessageDTO messageDTO) {
     }
 }

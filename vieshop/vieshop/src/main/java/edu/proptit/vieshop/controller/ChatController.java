@@ -1,11 +1,7 @@
 package edu.proptit.vieshop.controller;
 
-import edu.proptit.vieshop.common.NotificationStatus;
-import edu.proptit.vieshop.dto.ChatMessageDTO;
-import edu.proptit.vieshop.model.chats.ChatMessage;
-import edu.proptit.vieshop.model.chats.Message;
+import edu.proptit.vieshop.dto.ChatMessage;
 import edu.proptit.vieshop.service.ChatMessageService;
-import edu.proptit.vieshop.service.websocket.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;

@@ -5,8 +5,8 @@ import edu.proptit.vieshop.model.users.UserAddress;
 import java.util.List;
 
 public interface UserAddressService {
-    List<UserAddress> findAllUserAddress(Long userId);
+    List<UserAddress> findUserAddress(Long userId);
     String addUserAddress(UserAddress userAddress);
-    String updateUserAddress(UserAddress userAddress);
-    String deleteUserAddress(UserAddress userAddress);
+    String updateUserAddress(Long addressId, UserAddress userAddress);
+    String deleteUserAddress(Long addressId);
 }
