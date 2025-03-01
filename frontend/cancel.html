@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Cancelled - VieShop</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="/" style="text-decoration: none;">
+                    <h1 style="color: var(--primary-blue); margin: 0;">VieShop</h1>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="min-height: calc(100vh - 200px); display: flex; align-items: center; justify-content: center;">
+        <div class="card text-center" style="max-width: 500px;">
+            <div style="color: #dc3545; font-size: 4rem; margin-bottom: var(--spacing-lg);">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <h2 style="color: #dc3545;">Payment Cancelled</h2>
+            <p style="color: var(--gray-600); margin: var(--spacing-md) 0;">
+                Your payment was cancelled. No charges have been made to your account.
+            </p>
+            <div style="margin: var(--spacing-lg) 0;">
+                <p style="color: var(--gray-600);">Would you like to try again or need help?</p>
+                <p style="margin-top: var(--spacing-sm);">Contact our support: <a href="mailto:support@vieshop.com" style="color: var(--primary-blue);">support@vieshop.com</a></p>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="/cart" class="btn btn-primary">
+                    Return to Cart
+                </a>
+                <a href="/shop" class="btn btn-outline">
+                    Continue Shopping
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer style="background-color: var(--gray-800); color: var(--white); padding: var(--spacing-lg) 0;">
+        <div class="container text-center">
+            <p>&copy; 2024 VieShop. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

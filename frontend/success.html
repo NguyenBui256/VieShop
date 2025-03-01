@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Success - VieShop</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="/" style="text-decoration: none;">
+                    <h1 style="color: var(--primary-blue); margin: 0;">VieShop</h1>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="min-height: calc(100vh - 200px); display: flex; align-items: center; justify-content: center;">
+        <div class="card text-center" style="max-width: 500px;">
+            <div style="color: #10b981; font-size: 4rem; margin-bottom: var(--spacing-lg);">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 style="color: #10b981;">Payment Successful!</h2>
+            <p style="color: var(--gray-600); margin: var(--spacing-md) 0;">
+                Thank you for your purchase. Your order has been successfully processed.
+            </p>
+            <div style="margin: var(--spacing-lg) 0; padding: var(--spacing-md); background: var(--gray-50); border-radius: 8px;">
+                <p style="margin-bottom: var(--spacing-sm);">Order ID: <span id="orderId" style="font-weight: 600;">ORD123456</span></p>
+                <p>Amount Paid: <span id="amount" style="font-weight: 600; color: var(--primary-blue);">1,500,000₫</span></p>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="/shop" class="btn btn-outline">
+                    Continue Shopping
+                </a>
+                <a href="/profile" class="btn btn-primary">
+                    View Order
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer style="background-color: var(--gray-800); color: var(--white); padding: var(--spacing-lg) 0;">
+        <div class="container text-center">
+            <p>&copy; 2024 VieShop. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

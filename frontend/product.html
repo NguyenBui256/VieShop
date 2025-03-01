@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - VieShop</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 2rem;">
+                    <a href="/welcome.html" style="text-decoration: none;">
+                        <h1 id="logo" style="color: var(--primary-blue); margin: 0;">VieShop</h1>
+                    </a>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="/product.html" class="nav-link" id="shopBtn">Shop</a>
+                        <a href="#" class="nav-link">About</a>
+                        <a href="#" class="nav-link">Contact</a>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <a href="/cart.html" class="nav-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-badge" id="cartCount">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div style="display: grid; grid-template-columns: 250px 1fr; gap: var(--spacing-lg); padding: var(--spacing-lg) 0;">
+            <!-- Filters Sidebar -->
+            <aside class="card" style="height: fit-content;">
+                <h3>Filters</h3>
+                <div class="form-group">
+                    <label class="form-label">Categories</label>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" name="category" value="electronics">
+                            Electronics
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" name="category" value="fashion">
+                            Fashion
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" name="category" value="home">
+                            Home & Living
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" name="category" value="beauty">
+                            Health & Beauty
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Price Range</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="number" class="form-control" placeholder="Min" style="width: 100px;">
+                        <span>-</span>
+                        <input type="number" class="form-control" placeholder="Max" style="width: 100px;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Rating</label>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" name="rating" value="4">
+                            4★ & above
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" name="rating" value="3">
+                            3★ & above
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%;">Apply Filters</button>
+            </aside>
+
+            <!-- Products Grid -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                    <h2>All Products</h2>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <label class="form-label" style="margin: 0;">Sort by:</label>
+                        <select class="form-control" style="width: auto;">
+                            <option>Newest</option>
+                            <option>Price: Low to High</option>
+                            <option>Price: High to Low</option>
+                            <option>Most Popular</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="product-grid" id="productsContainer">
+                    <!-- Products will be dynamically loaded here -->
+                </div>
+
+                <!-- Pagination -->
+                <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: var(--spacing-xl);">
+                    <button class="btn btn-outline">Previous</button>
+                    <button class="btn btn-primary">1</button>
+                    <button class="btn btn-outline">2</button>
+                    <button class="btn btn-outline">3</button>
+                    <button class="btn btn-outline">Next</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer style="background-color: var(--gray-800); color: var(--white); padding: var(--spacing-xl) 0; margin-top: var(--spacing-xl);">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-xl);">
+                <div>
+                    <h3>VieShop</h3>
+                    <p>Your trusted shopping destination in Vietnam</p>
+                </div>
+                <div>
+                    <h3>Quick Links</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li><a href="/about.html" class="nav-link">About Us</a></li>
+                        <li><a href="/contact.html" class="nav-link">Contact</a></li>
+                        <li><a href="/terms.html" class="nav-link">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Contact Us</h3>
+                    <p>Email: support@vieshop.com</p>
+                    <p>Phone: +84 123 456 789</p>
+                </div>
+                <div>
+                    <h3>Follow Us</h3>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="#" class="nav-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="nav-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="nav-link"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--gray-600);">
+                <p>&copy; 2024 VieShop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+<!-- 
+    <script type="module" src="/js/product-variants.js"></script> -->
+    <script type="module" src="/js/product.js"></script>
+</body>
+</html>

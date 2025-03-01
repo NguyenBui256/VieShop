@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: vieshop
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/vieshop
+    username: root
+    password: Theshanon25062004@
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+jwt:
+  signerKey: "bb249fa35f9459ffa73393868b4fce1636e059eb95b56ffbc3867817d528452165a628478607bd33ff58dc53e38707a111b40a21f7b8655a9a770125f2519816"
+
+springdoc:
+  swagger-ui:
+    path: "/swagger-ui.html"
+
+PAYOS_CLIENT_ID: "8ee74b3f-e285-418e-a3df-4ac9c84c6a94"
+PAYOS_API_KEY: "c693694a-3d8d-41ee-98e4-6b56501fe512"
+PAYOS_CHECKSUM_KEY: "499ee5b604cc96a7db14f68411d34c6d46e70a318f12b60c35a2884b6a72e7b8"
