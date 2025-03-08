@@ -13,7 +13,7 @@ var receiverName;
 var receiverType;
 
 var messageList = [];
-var conversations = [];
+var conversations = {};
 var socket = null;
 var stompClient = null;
 
@@ -75,20 +75,28 @@ function sendMessage(input) {
             receiverName: receiverName || "Unknown",
             receiverId: receiverId ? parseInt(receiverId) : null,
             receiverType: receiverType,
+            createdAt: new Date().toISOString()
         }
         stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
-        chatMessage.createdAt = new Date().toISOString();
-        console.log(chatMessage);
         
         if (!chatMessage.receiverId) {
             console.error("No receiver ID specified");
             return;
         }
         
+        // Initialize conversation if it doesn't exist
+        if (!conversations[receiverId]) {
+            conversations[receiverId] = {
+                receiverId: receiverId,
+                receiverName: receiverName,
+                receiverType: receiverType,
+                messages: [],
+                timestamp: new Date().toISOString()
+            };
+        }
+        
         conversations[receiverId].messages.push(chatMessage);
         addMessageToUI(chatMessage);
-        
-        // Send to server
     }
     input.value = '';
 }
@@ -99,25 +107,25 @@ function connect() {
     
     stompClient.connect({}, 
         (frame) => {
+            console.log('Connected to WebSocket:', frame);
+            
             // Subscribe to public channel
             stompClient.subscribe(`/topic/public`, 
                 (message) => {
-                    console.log("Received user message:", message);
+                    console.log("Received public message:", message);
                     const receivedMessage = JSON.parse(message.body);
-                    addMessageToUI(receivedMessage);
+                    handleIncomingMessage(receivedMessage);
                 }
             );
 
+            // Subscribe to personal channel for direct messages
             stompClient.subscribe(`/user/${user.id}/queue/messages`, 
                 (message) => {
-                    console.log("Received chat message:", message);
+                    console.log("Received private message:", message);
                     const receivedMessage = JSON.parse(message.body);
-                    conversations[receivedMessage['senderId']].messages.push(receivedMessage);
-                    addMessageToUI(receivedMessage);
+                    handleIncomingMessage(receivedMessage);
                 }
             );
-
-            console.log('Connected:', frame);
             
             // Notify server that user is online
             stompClient.send(`/app/chat.addUser`, {}, JSON.stringify({
@@ -139,12 +147,72 @@ function connect() {
     );
 }
 
+// Handle incoming messages from WebSocket
+function handleIncomingMessage(message) {
+    // Skip system messages
+    if (message.messageType === "JOIN" || message.messageType === "LEAVE") {
+        return;
+    }
+    
+    const senderId = message.senderId;
+    
+    // Initialize conversation if it doesn't exist
+    if (!conversations[senderId]) {
+        conversations[senderId] = {
+            receiverId: senderId,
+            receiverName: message.senderName,
+            receiverType: message.receiverType || 'USER',
+            messages: [],
+            timestamp: message.createdAt || new Date().toISOString(),
+            avatar: 'https://via.placeholder.com/40'
+        };
+    }
+    
+    // Add message to conversation
+    conversations[senderId].messages.push(message);
+    conversations[senderId].timestamp = message.createdAt || new Date().toISOString();
+    
+    // If we're currently viewing this conversation, add message to UI
+    if (receiverId && parseInt(receiverId) === parseInt(senderId)) {
+        addMessageToUI(message);
+    } else {
+        // Otherwise show notification
+        showNotification(message.senderName, message.content);
+        
+        // Update conversation list to show new message
+        renderAllConversations(conversations);
+        
+        // Update message count badge
+        updateMessageCount();
+    }
+}
+
+// Update the message count badge
+function updateMessageCount() {
+    const messageCount = document.getElementById('messageCount');
+    if (messageCount) {
+        // Count unread messages (this is a simplified version - you might want to track read status)
+        const unreadCount = Object.values(conversations)
+            .filter(conv => parseInt(conv.receiverId) !== parseInt(receiverId))
+            .length;
+        
+        messageCount.textContent = unreadCount > 0 ? unreadCount : '0';
+    }
+}
+
 async function loadConversationHistory(receiverId) {
     try {
         const chatMessages = document.querySelector('.chat-messages');
         chatMessages.innerHTML = 'Loading...';
+        
+        // Ensure the conversation exists
+        if (!conversations[receiverId] || !conversations[receiverId].messages) {
+            chatMessages.innerHTML = 'No messages yet. Start a conversation!';
+            return;
+        }
+        
         const messages = conversations[receiverId].messages;
-        console.log(messages);
+        
         // Clear existing messages in the UI
         if (chatMessages) {
             chatMessages.innerHTML = '';
@@ -177,15 +245,18 @@ async function fetch_and_render_messages() {
         }
 
         messageList = await response.json();
-        console.log(messageList.data);
+        console.log("Fetched messages:", messageList.data);
         conversations = groupMessagesByConversation(messageList.data);
         renderAllConversations(conversations);
-        console.log(conversations);
         
         // If we're in a specific conversation view, setup the chat UI
         if (receiverId) {
             setupChatView(receiverId, receiverName);
         }
+        
+        // Update message count badge
+        updateMessageCount();
+        
         return;
     } catch (error) {
         console.error('Error fetching messages:', error);
@@ -200,17 +271,16 @@ function groupMessagesByConversation(messages) {
         let conversationName;
         let conversationType;
         let lastActivity = message.created_at || formatTime(new Date());
-        console.log(lastActivity);
         
         // Determine if the user is sender or receiver
         if (message.senderId === user.id) {
             conversationId = message.receiverId;
             conversationName = message.receiverName;
-            conversationType = message.receiverType || 'https://via.placeholder.com/40';
+            conversationType = message.receiverType || 'USER';
         } else {
             conversationId = message.senderId;
             conversationName = message.senderName;
-            conversationType = message.receiverType || 'https://via.placeholder.com/40';
+            conversationType = message.senderType || 'USER';
         }
 
         if (!conversations[conversationId]) {
@@ -219,9 +289,10 @@ function groupMessagesByConversation(messages) {
                 receiverName: conversationName,
                 receiverType: conversationType,
                 messages: [],
-                timestamp: lastActivity
+                timestamp: lastActivity,
+                avatar: 'https://via.placeholder.com/40'
             };
-        } else if (lastActivity > new Date(conversations[conversationId].lastActivity)) {
+        } else if (lastActivity > new Date(conversations[conversationId].timestamp)) {
             // Update last activity if this message is newer
             conversations[conversationId].timestamp = lastActivity;
         }
@@ -231,7 +302,7 @@ function groupMessagesByConversation(messages) {
 
     // Sort messages within each conversation by timestamp
     Object.values(conversations).forEach(conversation => {
-        conversation.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        conversation.messages.sort((a, b) => new Date(a.timestamp || a.createdAt) - new Date(b.timestamp || b.createdAt));
     });
 
     return conversations;
@@ -245,10 +316,14 @@ function renderAllConversations(conversations) {
 
     // Convert to array and sort by last activity
     const sortedConversations = Object.values(conversations).sort(
-        (a, b) => new Date(b.lastActivity) - new Date(a.lastActivity)
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
     );
 
     sortedConversations.forEach(conversation => {
+        if (!conversation.messages || conversation.messages.length === 0) {
+            return; // Skip conversations with no messages
+        }
+        
         const lastMessage = conversation.messages[conversation.messages.length - 1];
         const isActive = conversation.receiverId === parseInt(receiverId);
         
@@ -257,13 +332,13 @@ function renderAllConversations(conversations) {
             lastMessage.content;
             
         const conversationElement = document.createElement('div');
-        conversationElement.className = `chat-user`;
+        conversationElement.className = `chat-user ${isActive ? 'active' : ''}`;
         conversationElement.innerHTML = `
             <img src="${conversation.avatar}" alt="User avatar">
             <div class="chat-user-info">
                 <h4>${conversation.receiverName}</h4>
                 <p>${messagePreview}</p>
-                <small>${formatTime(lastMessage.createdAt)}</small>
+                <small>${formatTime(lastMessage.createdAt || lastMessage.timestamp)}</small>
             </div>
         `;
 
@@ -304,16 +379,15 @@ function addMessageToUI(message) {
     // If we're in the conversation view that matches this message
     const chatMain = document.querySelector(`.chat-main`);
     if (chatMain) {
-        console.log("ALALALALAL");
         const chatMessages = chatMain.querySelector('.chat-messages');
         if (chatMessages) {
-            const messageClass = message.senderId === currentUserId ? 'sent' : 'received';
+            const messageClass = parseInt(message.senderId) === parseInt(currentUserId) ? 'sent' : 'received';
             
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${messageClass}`;
             messageDiv.innerHTML = `
                 <p>${message.content}</p>
-                <span class="time">${formatTime(message.createdAt)}</span>
+                <span class="time">${formatTime(message.createdAt || message.timestamp)}</span>
             `;
             
             chatMessages.appendChild(messageDiv);
@@ -321,7 +395,7 @@ function addMessageToUI(message) {
             // Scroll to bottom
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-    } else if (message.senderId !== currentUserId) {
+    } else if (parseInt(message.senderId) !== parseInt(currentUserId)) {
         // If message is from someone else and we're not in that conversation,
         // we could show a notification here
         showNotification(message.senderName, message.content);
@@ -329,6 +403,7 @@ function addMessageToUI(message) {
 }
 
 function formatTime(timestamp) {
+    if (!timestamp) return '';
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
@@ -374,7 +449,7 @@ function showNotification(sender, content) {
 function createNotification(sender, content) {
     const notification = new Notification(sender, {
         body: content,
-        icon: "path/to/icon.png" // Add your app icon here
+        icon: "assets/logo.png" // Updated to use the app logo
     });
     
     notification.onclick = function() {
@@ -384,23 +459,23 @@ function createNotification(sender, content) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // First connect to WebSocket
-
-    
-    // Then fetch and render messages
+    // First fetch and render messages
     await fetch_and_render_messages();
     
-
+    // Then connect to WebSocket
+    connect();
     
     // If we're in a specific conversation, scroll to bottom of chat
     const chatMessages = document.querySelector('.chat-messages');
     if (chatMessages) {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-    connect();
 });
 
 window.addEventListener('beforeunload', function() {
+    if (stompClient) {
+        stompClient.disconnect();
+    }
     if (socket) {
         socket.close();
     }

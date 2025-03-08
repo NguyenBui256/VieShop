@@ -26,62 +26,61 @@
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-badge" id="cartCount">0</span>
                     </a>
+                    <a href="chat.html" class="nav-link">
+                        <i class="fa-solid fa-message"></i>
+                        <span class="cart-badge" id="messageCount">0</span>    
+                    </a>
                 </div>
             </div>
         </div>
     </nav>
 
     <main class="container">
-        <div style="display: grid; grid-template-columns: 250px 1fr; gap: var(--spacing-lg); padding: var(--spacing-lg) 0;">
+        <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--spacing-lg); padding: var(--spacing-lg) 0;">
             <!-- Filters Sidebar -->
-            <aside class="card" style="height: fit-content;">
+            <aside class="card" style="height: fit-content; margin-left: -20px; width: 200px;">
                 <h3>Filters</h3>
                 <div class="form-group">
+                    <label class="form-label">Search</label>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search products...">
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">Categories</label>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="category" value="electronics">
-                            Electronics
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="category" value="fashion">
-                            Fashion
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="category" value="home">
-                            Home & Living
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="category" value="beauty">
-                            Health & Beauty
-                        </label>
-                    </div>
+                    <select id="categoryFilter" class="form-control">
+                        <option value="">All Categories</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="home">Home & Living</option>
+                        <option value="beauty">Health & Beauty</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Price Range</label>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <input type="number" class="form-control" placeholder="Min" style="width: 100px;">
-                        <span>-</span>
-                        <input type="number" class="form-control" placeholder="Max" style="width: 100px;">
-                    </div>
+                    <select id="priceFilter" class="form-control">
+                        <option value="">All Prices</option>
+                        <option value="low">Under 200,000₫</option>
+                        <option value="medium">200,000₫ - 500,000₫</option>
+                        <option value="high">Over 500,000₫</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Rating</label>
                     <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="rating" value="4">
+                            <input type="checkbox" name="rating" value="4" id="rating4">
                             4★ & above
                         </label>
                         <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" name="rating" value="3">
+                            <input type="checkbox" name="rating" value="3" id="rating3">
                             3★ & above
                         </label>
                     </div>
                 </div>
 
-                <button class="btn btn-primary" style="width: 100%;">Apply Filters</button>
+                <button class="btn btn-primary" id="applyFiltersBtn" style="width: 100%;">Apply Filters</button>
             </aside>
 
             <!-- Products Grid -->
@@ -90,11 +89,11 @@
                     <h2>All Products</h2>
                     <div style="display: flex; gap: 1rem; align-items: center;">
                         <label class="form-label" style="margin: 0;">Sort by:</label>
-                        <select class="form-control" style="width: auto;">
-                            <option>Newest</option>
-                            <option>Price: Low to High</option>
-                            <option>Price: High to Low</option>
-                            <option>Most Popular</option>
+                        <select class="form-control" style="width: auto;" id="sortBy">
+                            <option value="newest">Newest</option>
+                            <option value="price-low-high">Price: Low to High</option>
+                            <option value="price-high-low">Price: High to Low</option>
+                            <option value="rating">Most Popular</option>
                         </select>
                     </div>
                 </div>
@@ -152,5 +151,68 @@
 <!-- 
     <script type="module" src="/js/product-variants.js"></script> -->
     <script type="module" src="/js/product.js"></script>
+    <style>
+        .product-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+            background-color: var(--gray-200);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 180px;
+            background-color: var(--gray-200);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-card {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--spacing-md);
+            padding: 0;
+        }
+        
+        @media (max-width: 1200px) {
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </body>
 </html>

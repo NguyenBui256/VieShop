@@ -1,15 +1,10 @@
 package edu.proptit.vieshop.model.orders;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import edu.proptit.vieshop.model.users.Shop;
-import edu.proptit.vieshop.model.users.UserAddress;
-import edu.proptit.vieshop.model.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,7 +29,7 @@ public class Order {
     private Long addressId;
 
     @Column(name = "total_amount", nullable = false)
-    private BigDecimal totalAmount;
+    private Double totalAmount;
 
     @Column(name = "status", nullable = false)
     private String status;
@@ -43,7 +38,7 @@ public class Order {
     private String shippingMethod;
 
     @Column(name = "shipping_fee", nullable = false)
-    private BigDecimal shippingFee;
+    private Double shippingFee;
 
     @Column(name = "is_delete", nullable = false)
     private Boolean isDelete = false;
